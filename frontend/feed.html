@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MzansiBuilds – Feed</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --green-dark: #0f3d1f;
+        --green-main: #1a5c2a;
+        --green-light: #2d8c47;
+        --green-pale: #eaf3de;
+        --black: #0d0d0d;
+        --white: #ffffff;
+        --gray: #f5f5f3;
+        --gray-border: #e0e0dc;
+        --text-muted: #6b7280;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--gray);
+        min-height: 100vh;
+      }
+
+      /* NAV */
+      nav {
+        background: var(--green-dark);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      nav h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--white);
+      }
+      nav h1 span {
+        color: #2d8c47;
+      }
+      .nav-links {
+        display: flex;
+        gap: 6px;
+      }
+      .nav-links a {
+        color: #9ca3af;
+        text-decoration: none;
+        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: all 0.2s;
+      }
+      .nav-links a.active,
+      .nav-links a:hover {
+        background: var(--green-main);
+        color: var(--white);
+      }
+
+      /* MAIN LAYOUT */
+      .main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 20px 16px;
+      }
+
+      /* POST BOX */
+      .post-box {
+        background: var(--white);
+        border-radius: 14px;
+        padding: 16px;
+        border: 1px solid var(--gray-border);
+        margin-bottom: 20px;
+      }
+      .post-box textarea {
+        width: 100%;
+        border: 1.5px solid var(--gray-border);
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        resize: none;
+        outline: none;
+        height: 80px;
+        transition: border-color 0.2s;
+      }
+      .post-box textarea:focus {
+        border-color: var(--green-main);
+      }
+      .post-box-footer {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        align-items: center;
+      }
+      .post-box-footer select {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1.5px solid var(--gray-border);
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: "Inter", sans-serif;
+        outline: none;
+        color: var(--black);
+      }
+      .btn-post {
+        background: var(--green-main);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .btn-post:hover {
+        background: var(--green-dark);
+      }
+
+      /* FEED CARD */
+      .card {
+        background: var(--white);
+        border-radius: 14px;
+        padding: 18px;
+        border: 1px solid var(--gray-border);
+        margin-bottom: 14px;
+        transition: box-shadow 0.2s;
+      }
+      .card:hover {
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--green-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 13px;
+        font-weight: 500;
+        font-family: "Space Grotesk", sans-serif;
+        flex-shrink: 0;
+      }
+      .card-meta {
+        flex: 1;
+      }
+      .card-meta strong {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--black);
+        display: block;
+      }
+      .card-meta span {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .badge {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 500;
+      }
+      .badge-support {
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .badge-stage {
+        background: var(--green-pale);
+        color: var(--green-dark);
+      }
+      .card-body {
+        font-size: 14px;
+        color: #374151;
+        line-height: 1.6;
+        margin-bottom: 14px;
+      }
+      .card-tags {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 14px;
+      }
+      .tag {
+        font-size: 11px;
+        background: var(--gray);
+        color: var(--text-muted);
+        padding: 3px 10px;
+        border-radius: 20px;
+      }
+      .card-actions {
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid var(--gray-border);
+        padding-top: 12px;
+      }
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--text-muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 8px;
+        transition: all 0.2s;
+        font-family: "Inter", sans-serif;
+      }
+      .action-btn:hover {
+        background: var(--gray);
+        color: var(--black);
+      }
+      .action-btn.collab:hover {
+        background: var(--green-pale);
+        color: var(--green-main);
+      }
+
+      /* COMMENTS */
+      .comments {
+        margin-top: 12px;
+        display: none;
+      }
+      .comments.open {
+        display: block;
+      }
+      .comment {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .comment-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 10px;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+      .comment-bubble {
+        background: var(--gray);
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 13px;
+        color: #374151;
+        flex: 1;
+      }
+      .comment-bubble strong {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--black);
+        margin-bottom: 2px;
+      }
+      .comment-input-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .comment-input-row input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1.5px solid var(--gray-border);
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: "Inter", sans-serif;
+        outline: none;
+      }
+      .comment-input-row input:focus {
+        border-color: var(--green-main);
+      }
+      .comment-input-row button {
+        background: var(--green-main);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <h1>Mzansi<span>Builds</span></h1>
+      <div class="nav-links">
+        <a href="feed.html" class="active">Feed</a>
+        <a href="projects.html">My Projects</a>
+        <a href="wall.html">Wall 🎉</a>
+        <a href="index.html">Sign Out</a>
+      </div>
+    </nav>
+
+    <div class="main">
+      <!-- POST BOX -->
+      <div class="post-box">
+        <textarea
+          id="post-text"
+          placeholder="What are you building today? Share your progress..."
+        ></textarea>
+        <div class="post-box-footer">
+          <select id="post-stage">
+            <option value="">Select stage...</option>
+            <option>Planning</option>
+            <option>In Progress</option>
+            <option>Testing</option>
+            <option>Completed</option>
+          </select>
+          <select id="post-support">
+            <option value="">Support needed?</option>
+            <option>No support needed</option>
+            <option>Need a designer</option>
+            <option>Need a backend dev</option>
+            <option>Need a frontend dev</option>
+            <option>Need feedback</option>
+          </select>
+          <button class="btn-post" onclick="addPost()">Post</button>
+        </div>
+      </div>
+
+      <!-- FEED -->
+      <div id="feed">
+        <!-- CARD 1 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar">TM</div>
+            <div class="card-meta">
+              <strong>Thabo Mokoena</strong>
+              <span>2 hours ago · Stage: <b>In Progress</b></span>
+            </div>
+            <span class="badge badge-support">Needs feedback</span>
+          </div>
+          <div class="card-body">
+            Just finished the authentication flow for my budgeting app Budgtr!
+            🎉 Used JWT tokens for security. Took way longer than expected but
+            learned a lot. Next up: the dashboard!
+          </div>
+          <div class="card-tags">
+            <span class="tag">React</span>
+            <span class="tag">Node.js</span>
+            <span class="tag">Finance</span>
+          </div>
+          <div class="card-actions">
+            <button class="action-btn" onclick="toggleComments('c1')">
+              💬 Comments (2)
+            </button>
+            <button class="action-btn collab" onclick="raiseHand(this)">
+              ✋ Raise hand
+            </button>
+          </div>
+          <div class="comments" id="c1">
+            <div class="comment">
+              <div class="comment-avatar">NS</div>
+              <div class="comment-bubble">
+                <strong>Nomsa S</strong>Great work! Did you use refresh tokens
+                too?
+              </div>
+            </div>
+            <div class="comment">
+              <div class="comment-avatar">LK</div>
+              <div class="comment-bubble">
+                <strong>Lebo K</strong>This is fire 🔥 I'd love to test it!
+              </div>
+            </div>
+            <div class="comment-input-row">
+              <input type="text" placeholder="Add a comment..." id="ci1" />
+              <button onclick="addComment('c1', 'ci1')">Send</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 2 -->
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar" style="background: var(--black)">NZ</div>
+            <div class="card-meta">
+              <strong>Nomsa Zulu</strong>
+              <span>5 hours ago · Stage: <b>Planning</b></span>
+            </div>
+            <span class="badge badge-support">Need a designer</span>
+          </div>
+          <div class="card-body">
+            Starting a new project — ShopSA, a local e-commerce platform for SA
+            township businesses. Just mapped out the database schema today.
+            Looking for a UI/UX designer to collaborate with! 🛒
+          </div>
+          <div class="card-tags">
+            <span class="tag">E-commerce</span>
+            <span class="tag">Python</span>
+            <span class="tag">SA</span>
+          </div>
+          <div class="card-actions">
+            <button class="action-btn" onclick="toggleComments('c2')">
+              💬 Comments (1)
+            </button>
+            <button class="action-btn collab" onclick="raiseHand(this)">
+              ✋ Raise hand
+            </button>
+          </div>
+          <div class="comments" id="c2">
+            <div class="comment">
+              <div class="comment-avatar">TM</div>
+              <div class="comment-bubble">
+                <strong>Thabo M</strong>This is needed! I'd use this for my
+                aunt's shop 🙌
+              </div>
+            </div>
+            <div class="comment-input-row">
+              <input type="text" placeholder="Add a comment..." id="ci2" />
+              <button onclick="addComment('c2', 'ci2')">Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function toggleComments(id) {
+        const el = document.getElementById(id);
+        el.classList.toggle("open");
+      }
+
+      function raiseHand(btn) {
+        btn.textContent = "✅ Hand raised!";
+        btn.style.background = "var(--green-pale)";
+        btn.style.color = "var(--green-main)";
+        btn.disabled = true;
+      }
+
+      function addComment(commentsId, inputId) {
+        const input = document.getElementById(inputId);
+        const text = input.value.trim();
+        if (!text) return;
+        const div = document.createElement("div");
+        div.className = "comment";
+        div.innerHTML = `
+        <div class="comment-avatar" style="background:var(--green-main);">Me</div>
+        <div class="comment-bubble"><strong>You</strong>${text}</div>
+      `;
+        const container = document.getElementById(commentsId);
+        const inputRow = container.querySelector(".comment-input-row");
+        container.insertBefore(div, inputRow);
+        input.value = "";
+      }
+
+      function addPost() {
+        const text = document.getElementById("post-text").value.trim();
+        const stage = document.getElementById("post-stage").value;
+        const support = document.getElementById("post-support").value;
+        if (!text) return alert("Please write something first!");
+
+        const card = document.createElement("div");
+        card.className = "card";
+        const commId = "c" + Date.now();
+        card.innerHTML = `
+        <div class="card-header">
+          <div class="avatar" style="background:var(--green-main);">Me</div>
+          <div class="card-meta">
+            <strong>You</strong>
+            <span>Just now · Stage: <b>${stage || "Not set"}</b></span>
+          </div>
+          ${support ? `<span class="badge badge-support">${support}</span>` : ""}
+        </div>
+        <div class="card-body">${text}</div>
+        <div class="card-actions">
+          <button class="action-btn" onclick="toggleComments('${commId}')">💬 Comments (0)</button>
+          <button class="action-btn collab" onclick="raiseHand(this)">✋ Raise hand</button>
+        </div>
+        <div class="comments" id="${commId}">
+          <div class="comment-input-row">
+            <input type="text" placeholder="Add a comment..." id="ci${commId}"/>
+            <button onclick="addComment('${commId}','ci${commId}')">Send</button>
+          </div>
+        </div>
+      `;
+        const feed = document.getElementById("feed");
+        feed.insertBefore(card, feed.firstChild);
+        document.getElementById("post-text").value = "";
+        document.getElementById("post-stage").value = "";
+        document.getElementById("post-support").value = "";
+      }
+    </script>
+  </body>
+</html>
