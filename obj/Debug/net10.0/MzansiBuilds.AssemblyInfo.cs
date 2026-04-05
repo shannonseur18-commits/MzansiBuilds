@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MzansiBuilds")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a174f6761d7ba95f9ac4ac1cbc2630a95d034547")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+56e03aab821a4232693d17cf2bc2971829882818")]
 [assembly: System.Reflection.AssemblyProductAttribute("MzansiBuilds")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MzansiBuilds")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
