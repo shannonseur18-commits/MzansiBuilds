@@ -1,0 +1,12 @@
+namespace MzansiBuilds.Models
+{
+    public class Milestone
+    {
+        public int Id { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public bool IsCompleted { get; set; } = false;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public int ProjectId { get; set; }
+        public Project Project { get; set; } = null!;
+    }
+}
