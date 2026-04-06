@@ -95,7 +95,6 @@
         font-weight: 500;
         font-family: "Inter", sans-serif;
         cursor: pointer;
-        transition: background 0.2s;
       }
       .btn-new:hover {
         background: var(--green-dark);
@@ -147,7 +146,6 @@
         font-family: "Inter", sans-serif;
         color: var(--black);
         outline: none;
-        transition: border-color 0.2s;
       }
       input:focus,
       select:focus,
@@ -185,9 +183,6 @@
         font-weight: 500;
         font-family: "Inter", sans-serif;
         cursor: pointer;
-      }
-      .btn-save:hover {
-        background: var(--green-dark);
       }
       .project-card {
         background: var(--white);
@@ -233,13 +228,6 @@
         background: #fef3c7;
         color: #92400e;
       }
-      .badge-black {
-        background: #f3f4f6;
-        color: var(--black);
-      }
-      .milestones {
-        margin-top: 14px;
-      }
       .milestones h4 {
         font-size: 13px;
         font-weight: 500;
@@ -255,18 +243,12 @@
         font-size: 13px;
         color: var(--black);
       }
-      .milestone:last-of-type {
-        border-bottom: none;
-      }
       .milestone-dot {
         width: 10px;
         height: 10px;
         border-radius: 50%;
         background: var(--green-main);
         flex-shrink: 0;
-      }
-      .milestone-dot.pending {
-        background: var(--gray-border);
       }
       .add-milestone {
         display: flex;
@@ -300,10 +282,11 @@
         font-weight: 500;
         font-family: "Inter", sans-serif;
         cursor: pointer;
-        transition: background 0.2s;
       }
-      .complete-btn:hover {
-        background: #333;
+      .loading {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-muted);
       }
     </style>
   </head>
@@ -317,24 +300,21 @@
         <a href="index.html">Sign Out</a>
       </div>
     </nav>
-
     <div class="main">
       <div class="page-header">
         <h2>My Projects</h2>
         <button class="btn-new" onclick="openModal()">+ New Project</button>
       </div>
-
-      <!-- NEW PROJECT MODAL -->
       <div class="modal-overlay" id="modal">
         <div class="modal">
           <h3>Create New Project</h3>
           <div class="form-group">
-            <label>Project name</label>
-            <input type="text" id="proj-name" placeholder="e.g. BudgetApp" />
+            <label>Project name</label
+            ><input type="text" id="proj-name" placeholder="e.g. BudgetApp" />
           </div>
           <div class="form-group">
-            <label>Description</label>
-            <textarea
+            <label>Description</label
+            ><textarea
               id="proj-desc"
               placeholder="What are you building?"
             ></textarea>
@@ -366,113 +346,103 @@
           </div>
         </div>
       </div>
-
-      <!-- PROJECTS LIST -->
       <div id="projects-list">
-        <div class="project-card">
-          <div class="project-header">
-            <div>
-              <h3>MzansiBuilds</h3>
-              <p>A platform for SA developers to build in public</p>
-            </div>
-          </div>
-          <div class="badges">
-            <span class="badge badge-green">In Progress</span>
-            <span class="badge badge-yellow">Need feedback</span>
-          </div>
-          <div class="milestones">
-            <h4>Milestones</h4>
-            <div class="milestone">
-              <div class="milestone-dot"></div>
-              Set up project structure
-            </div>
-            <div class="milestone">
-              <div class="milestone-dot"></div>
-              Build login page
-            </div>
-            <div class="milestone">
-              <div class="milestone-dot pending"></div>
-              Build feed page
-            </div>
-            <div class="milestone">
-              <div class="milestone-dot pending"></div>
-              Deploy app
-            </div>
-            <div class="add-milestone">
-              <input type="text" placeholder="Add new milestone..." id="ms1" />
-              <button onclick="addMilestone('ms1', this)">Add</button>
-            </div>
-          </div>
-          <button class="complete-btn" onclick="markComplete(this)">
-            Mark as Completed 🎉
-          </button>
-        </div>
+        <div class="loading">Loading projects...</div>
       </div>
     </div>
 
-    <script>
-      function openModal() {
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      const supabase = createClient(
+        "https://soqkgdjjupqxjvmpsuxd.supabase.co",
+        "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
+      );
+      const userName = localStorage.getItem("user_name") || "Anonymous";
+
+      async function loadProjects() {
+        const { data: projects } = await supabase
+          .from("projects")
+          .select("*, milestones(*)")
+          .eq("author_name", userName)
+          .order("created_at", { ascending: false });
+
+        const list = document.getElementById("projects-list");
+        if (!projects || projects.length === 0) {
+          list.innerHTML =
+            '<div class="loading">No projects yet. Create your first one!</div>';
+          return;
+        }
+        list.innerHTML = projects
+          .map(
+            (p) => `
+        <div class="project-card">
+          <div class="project-header">
+            <div><h3>${p.name}</h3><p>${p.description || ""}</p></div>
+          </div>
+          <div class="badges">
+            <span class="badge badge-green">${p.stage}</span>
+            <span class="badge badge-yellow">${p.support_needed}</span>
+          </div>
+          <div class="milestones">
+            <h4>Milestones</h4>
+            ${(p.milestones || [])
+              .map(
+                (m) => `
+              <div class="milestone"><div class="milestone-dot"></div>${m.title}</div>
+            `,
+              )
+              .join("")}
+            <div class="add-milestone">
+              <input type="text" placeholder="Add milestone..." id="ms-${p.id}"/>
+              <button onclick="addMilestone('${p.id}', 'ms-${p.id}')">Add</button>
+            </div>
+          </div>
+          ${!p.is_completed ? `<button class="complete-btn" onclick="completeProject('${p.id}')">Mark as Completed 🎉</button>` : '<p style="text-align:center;color:var(--green-main);margin-top:12px;font-weight:500;">✅ Completed!</p>'}
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      window.openModal = () =>
         document.getElementById("modal").classList.add("open");
-      }
-      function closeModal() {
+      window.closeModal = () =>
         document.getElementById("modal").classList.remove("open");
-      }
-      function saveProject() {
+
+      window.saveProject = async function () {
         const name = document.getElementById("proj-name").value.trim();
-        const desc = document.getElementById("proj-desc").value.trim();
-        const stage = document.getElementById("proj-stage").value;
-        const support = document.getElementById("proj-support").value;
         if (!name) return alert("Please enter a project name!");
-        const id = "ms" + Date.now();
-        const card = document.createElement("div");
-        card.className = "project-card";
-        card.innerHTML = `
-        <div class="project-header">
-          <div>
-            <h3>${name}</h3>
-            <p>${desc}</p>
-          </div>
-        </div>
-        <div class="badges">
-          <span class="badge badge-green">${stage}</span>
-          <span class="badge badge-yellow">${support}</span>
-        </div>
-        <div class="milestones">
-          <h4>Milestones</h4>
-          <div class="add-milestone">
-            <input type="text" placeholder="Add new milestone..." id="${id}"/>
-            <button onclick="addMilestone('${id}', this)">Add</button>
-          </div>
-        </div>
-        <button class="complete-btn" onclick="markComplete(this)">Mark as Completed 🎉</button>
-      `;
-        document.getElementById("projects-list").prepend(card);
+        await supabase.from("projects").insert({
+          name,
+          description: document.getElementById("proj-desc").value,
+          stage: document.getElementById("proj-stage").value,
+          support_needed: document.getElementById("proj-support").value,
+          author_name: userName,
+        });
         closeModal();
-        document.getElementById("proj-name").value = "";
-        document.getElementById("proj-desc").value = "";
-      }
-      function addMilestone(inputId, btn) {
+        loadProjects();
+      };
+
+      window.addMilestone = async function (projectId, inputId) {
         const input = document.getElementById(inputId);
         const text = input.value.trim();
         if (!text) return;
-        const div = document.createElement("div");
-        div.className = "milestone";
-        div.innerHTML = `<div class="milestone-dot"></div> ${text}`;
-        const addRow = btn.parentElement;
-        addRow.parentElement.insertBefore(div, addRow);
+        await supabase
+          .from("milestones")
+          .insert({ title: text, project_id: projectId });
         input.value = "";
-      }
-      function markComplete(btn) {
-        const card = btn.closest(".project-card");
-        const badge = card.querySelector(".badge-green");
-        if (badge) badge.textContent = "Completed";
-        btn.textContent = "✅ Completed!";
-        btn.disabled = true;
-        btn.style.background = "#333";
-        setTimeout(() => {
-          window.location.href = "wall.html";
-        }, 1500);
-      }
+        loadProjects();
+      };
+
+      window.completeProject = async function (projectId) {
+        await supabase
+          .from("projects")
+          .update({ is_completed: true })
+          .eq("id", projectId);
+        loadProjects();
+      };
+
+      loadProjects();
     </script>
   </body>
 </html>

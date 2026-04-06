@@ -16,7 +16,6 @@
         margin: 0;
         padding: 0;
       }
-
       :root {
         --green-dark: #0f3d1f;
         --green-main: #1a5c2a;
@@ -28,7 +27,6 @@
         --gray-border: #e0e0dc;
         --text-muted: #6b7280;
       }
-
       body {
         font-family: "Inter", sans-serif;
         background: var(--black);
@@ -41,17 +39,14 @@
           radial-gradient(ellipse at 20% 50%, #0f3d1f44 0%, transparent 60%),
           radial-gradient(ellipse at 80% 20%, #1a5c2a33 0%, transparent 50%);
       }
-
       .container {
         width: 100%;
         max-width: 440px;
       }
-
       .logo {
         text-align: center;
         margin-bottom: 36px;
       }
-
       .logo h1 {
         font-family: "Space Grotesk", sans-serif;
         font-size: 32px;
@@ -59,25 +54,20 @@
         color: var(--white);
         letter-spacing: -1px;
       }
-
       .logo h1 span {
         color: var(--green-light);
       }
-
       .logo p {
         font-size: 13px;
         color: #9ca3af;
         margin-top: 6px;
-        letter-spacing: 0.5px;
       }
-
       .card {
         background: var(--white);
         border-radius: 16px;
         padding: 36px;
         border: 1px solid var(--gray-border);
       }
-
       .tabs {
         display: flex;
         background: var(--gray);
@@ -85,7 +75,6 @@
         padding: 4px;
         margin-bottom: 28px;
       }
-
       .tab {
         flex: 1;
         padding: 10px;
@@ -99,16 +88,13 @@
         border: none;
         background: transparent;
       }
-
       .tab.active {
         background: var(--green-main);
         color: var(--white);
       }
-
       .form-group {
         margin-bottom: 18px;
       }
-
       label {
         display: block;
         font-size: 13px;
@@ -116,7 +102,6 @@
         color: var(--black);
         margin-bottom: 6px;
       }
-
       input {
         width: 100%;
         padding: 11px 14px;
@@ -129,11 +114,9 @@
         transition: border-color 0.2s;
         outline: none;
       }
-
       input:focus {
         border-color: var(--green-main);
       }
-
       .btn {
         width: 100%;
         padding: 13px;
@@ -146,55 +129,25 @@
         font-family: "Inter", sans-serif;
         cursor: pointer;
         margin-top: 8px;
-        transition:
-          background 0.2s,
-          transform 0.1s;
+        transition: background 0.2s;
       }
-
       .btn:hover {
         background: var(--green-dark);
       }
-      .btn:active {
-        transform: scale(0.98);
-      }
-
-      .divider {
+      .error {
+        color: red;
+        font-size: 13px;
+        margin-top: 8px;
         text-align: center;
-        font-size: 12px;
-        color: var(--text-muted);
-        margin: 20px 0;
-        position: relative;
       }
-
-      .divider::before,
-      .divider::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        width: 42%;
-        height: 1px;
-        background: var(--gray-border);
+      .success {
+        color: var(--green-main);
+        font-size: 13px;
+        margin-top: 8px;
+        text-align: center;
       }
-      .divider::before {
-        left: 0;
-      }
-      .divider::after {
-        right: 0;
-      }
-
       .hidden {
         display: none;
-      }
-
-      .tagline {
-        text-align: center;
-        font-size: 12px;
-        color: #9ca3af;
-        margin-top: 20px;
-      }
-
-      .tagline span {
-        color: var(--green-light);
       }
     </style>
   </head>
@@ -204,93 +157,59 @@
         <h1>Mzansi<span>Builds</span></h1>
         <p>Build in public. Grow together. 🇿🇦</p>
       </div>
-
       <div class="card">
         <div class="tabs">
           <button class="tab active" onclick="showTab('login')">Sign In</button>
           <button class="tab" onclick="showTab('register')">Register</button>
         </div>
-
-        <!-- LOGIN FORM -->
         <div id="login-form">
           <div class="form-group">
             <label>Email address</label>
-            <input type="email" placeholder="you@example.com" />
+            <input
+              type="email"
+              id="login-email"
+              placeholder="you@example.com"
+            />
           </div>
           <div class="form-group">
             <label>Password</label>
-            <input type="password" placeholder="••••••••" />
+            <input type="password" id="login-password" placeholder="••••••••" />
           </div>
-          <button class="btn" onclick="window.location.href = 'feed.html'">
-            Sign In
-          </button>
-          <div class="divider">or</div>
-          <p
-            style="
-              text-align: center;
-              font-size: 13px;
-              color: var(--text-muted);
-            "
-          >
-            No account?
-            <span
-              style="
-                color: var(--green-main);
-                cursor: pointer;
-                font-weight: 500;
-              "
-              onclick="showTab('register')"
-              >Register here</span
-            >
-          </p>
+          <button class="btn" onclick="login()">Sign In</button>
+          <p id="login-msg"></p>
         </div>
-
-        <!-- REGISTER FORM -->
         <div id="register-form" class="hidden">
           <div class="form-group">
             <label>Full name</label>
-            <input type="text" placeholder="Shannon Seur" />
+            <input type="text" id="reg-name" placeholder="Shannon Seur" />
           </div>
           <div class="form-group">
             <label>Email address</label>
-            <input type="email" placeholder="you@example.com" />
+            <input type="email" id="reg-email" placeholder="you@example.com" />
           </div>
           <div class="form-group">
             <label>Password</label>
-            <input type="password" placeholder="Create a password" />
+            <input
+              type="password"
+              id="reg-password"
+              placeholder="Create a password"
+            />
           </div>
-          <button class="btn" onclick="window.location.href = 'feed.html'">
-            Create Account
-          </button>
-          <div class="divider">or</div>
-          <p
-            style="
-              text-align: center;
-              font-size: 13px;
-              color: var(--text-muted);
-            "
-          >
-            Already have an account?
-            <span
-              style="
-                color: var(--green-main);
-                cursor: pointer;
-                font-weight: 500;
-              "
-              onclick="showTab('login')"
-              >Sign in</span
-            >
-          </p>
+          <button class="btn" onclick="register()">Create Account</button>
+          <p id="reg-msg"></p>
         </div>
       </div>
-
-      <p class="tagline">
-        Powered by <span>South African developers</span> building the future
-      </p>
     </div>
 
-    <script>
-      function showTab(tab) {
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+      const supabase = createClient(
+        "https://soqkgdjjupqxjvmpsuxd.supabase.co",
+        "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
+      );
+
+      window.showTab = function (tab) {
         document
           .getElementById("login-form")
           .classList.toggle("hidden", tab !== "login");
@@ -303,7 +222,61 @@
             (tab === "login" && i === 0) || (tab === "register" && i === 1),
           );
         });
-      }
+      };
+
+      window.register = async function () {
+        const fullName = document.getElementById("reg-name").value.trim();
+        const email = document.getElementById("reg-email").value.trim();
+        const password = document.getElementById("reg-password").value;
+        const msg = document.getElementById("reg-msg");
+
+        if (!fullName || !email || !password) {
+          msg.className = "error";
+          msg.textContent = "Please fill in all fields!";
+          return;
+        }
+
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName } },
+        });
+
+        if (error) {
+          msg.className = "error";
+          msg.textContent = error.message;
+          return;
+        }
+
+        await supabase.from("users").insert({ full_name: fullName, email });
+        msg.className = "success";
+        msg.textContent = "Account created! Signing you in...";
+        localStorage.setItem("user_name", fullName);
+        localStorage.setItem("user_email", email);
+        setTimeout(() => (window.location.href = "feed.html"), 1500);
+      };
+
+      window.login = async function () {
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value;
+        const msg = document.getElementById("login-msg");
+
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) {
+          msg.className = "error";
+          msg.textContent = "Invalid email or password!";
+          return;
+        }
+
+        const fullName = data.user.user_metadata?.full_name || email;
+        localStorage.setItem("user_name", fullName);
+        localStorage.setItem("user_email", email);
+        window.location.href = "feed.html";
+      };
     </script>
   </body>
 </html>

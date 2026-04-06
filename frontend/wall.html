@@ -171,24 +171,18 @@
         line-height: 1.5;
         margin-bottom: 12px;
       }
-      .dev-card .completed-date {
+      .completed-date {
         font-size: 11px;
-        color: var(--text-muted);
         background: var(--green-pale);
         color: var(--green-dark);
         padding: 3px 10px;
         border-radius: 20px;
         display: inline-block;
       }
-      .new-badge {
-        background: var(--green-main);
-        color: var(--white);
-        font-size: 10px;
-        padding: 2px 8px;
-        border-radius: 20px;
-        display: inline-block;
-        margin-bottom: 8px;
-        font-weight: 500;
+      .loading {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-muted);
       }
     </style>
   </head>
@@ -202,107 +196,75 @@
         <a href="index.html">Sign Out</a>
       </div>
     </nav>
-
     <div class="main">
       <div class="wall-header">
         <div class="confetti">🎉</div>
         <h2>Celebration Wall</h2>
         <p>Developers who built in public and shipped their projects</p>
       </div>
-
       <div class="stats">
         <div class="stat-card">
-          <strong id="total-count">6</strong>
-          <span>Projects Shipped</span>
+          <strong id="total-count">0</strong><span>Projects Shipped</span>
         </div>
+        <div class="stat-card"><strong>🇿🇦</strong><span>Built in SA</span></div>
         <div class="stat-card">
-          <strong>🇿🇦</strong>
-          <span>Built in SA</span>
-        </div>
-        <div class="stat-card">
-          <strong>100%</strong>
-          <span>Built in Public</span>
+          <strong>100%</strong><span>Built in Public</span>
         </div>
       </div>
-
       <div class="grid" id="wall-grid">
-        <div class="dev-card">
-          <div class="new-badge">NEW</div>
-          <div class="dev-avatar">SS</div>
-          <h3>Shannon Seur</h3>
-          <div class="project-name">MzansiBuilds</div>
-          <div class="desc">
-            A platform for SA developers to build and share in public
-          </div>
-          <span class="completed-date">April 2026</span>
-        </div>
-        <div class="dev-card">
-          <div class="dev-avatar">TM</div>
-          <h3>Thabo Mokoena</h3>
-          <div class="project-name">Budgtr</div>
-          <div class="desc">
-            Personal budgeting app for young South Africans
-          </div>
-          <span class="completed-date">March 2026</span>
-        </div>
-        <div class="dev-card">
-          <div class="dev-avatar" style="background: var(--black)">NZ</div>
-          <h3>Nomsa Zulu</h3>
-          <div class="project-name">ShopSA</div>
-          <div class="desc">E-commerce platform for township businesses</div>
-          <span class="completed-date">March 2026</span>
-        </div>
-        <div class="dev-card">
-          <div class="dev-avatar" style="background: #333">LK</div>
-          <h3>Lebo Khumalo</h3>
-          <div class="project-name">LearnZA</div>
-          <div class="desc">Free coding tutorials in SA languages</div>
-          <span class="completed-date">February 2026</span>
-        </div>
-        <div class="dev-card">
-          <div class="dev-avatar" style="background: #1a3a5c">MP</div>
-          <h3>Mpho Pietersen</h3>
-          <div class="project-name">RideShare JHB</div>
-          <div class="desc">
-            Affordable ridesharing for Johannesburg commuters
-          </div>
-          <span class="completed-date">January 2026</span>
-        </div>
-        <div class="dev-card">
-          <div class="dev-avatar" style="background: #5c1a1a">AV</div>
-          <h3>Ayanda Van Wyk</h3>
-          <div class="project-name">HealthTrack</div>
-          <div class="desc">Simple health and wellness tracker app</div>
-          <span class="completed-date">January 2026</span>
-        </div>
+        <div class="loading">Loading...</div>
       </div>
     </div>
 
-    <script>
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("new")) {
-        const name = params.get("name") || "You";
-        const project = params.get("project") || "My Project";
-        const initials = name
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      const supabase = createClient(
+        "https://soqkgdjjupqxjvmpsuxd.supabase.co",
+        "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
+      );
+
+      function getInitials(name) {
+        return name
           .split(" ")
           .map((w) => w[0])
           .join("")
-          .toUpperCase();
-        const card = document.createElement("div");
-        card.className = "dev-card";
-        card.innerHTML = `
-        <div class="new-badge">NEW</div>
-        <div class="dev-avatar">${initials}</div>
-        <h3>${name}</h3>
-        <div class="project-name">${project}</div>
-        <div class="desc">Built in public on MzansiBuilds 🚀</div>
-        <span class="completed-date">April 2026</span>
-      `;
-        const grid = document.getElementById("wall-grid");
-        grid.insertBefore(card, grid.firstChild);
-        const count = document.getElementById("total-count");
-        count.textContent = parseInt(count.textContent) + 1;
+          .toUpperCase()
+          .slice(0, 2);
       }
+
+      async function loadWall() {
+        const { data: projects } = await supabase
+          .from("projects")
+          .select("*")
+          .eq("is_completed", true)
+          .order("created_at", { ascending: false });
+
+        const grid = document.getElementById("wall-grid");
+        document.getElementById("total-count").textContent =
+          projects?.length || 0;
+
+        if (!projects || projects.length === 0) {
+          grid.innerHTML =
+            '<div class="loading">No completed projects yet. Be the first! 🚀</div>';
+          return;
+        }
+
+        grid.innerHTML = projects
+          .map(
+            (p) => `
+        <div class="dev-card">
+          <div class="dev-avatar">${getInitials(p.author_name || "U")}</div>
+          <h3>${p.author_name || "Anonymous"}</h3>
+          <div class="project-name">${p.name}</div>
+          <div class="desc">${p.description || "Built in public on MzansiBuilds 🚀"}</div>
+          <span class="completed-date">${new Date(p.created_at).toLocaleDateString("en-ZA", { month: "long", year: "numeric" })}</span>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      loadWall();
     </script>
   </body>
 </html>
