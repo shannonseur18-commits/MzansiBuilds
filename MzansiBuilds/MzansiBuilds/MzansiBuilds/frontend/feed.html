@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MzansiBuilds – Feed</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --green-dark: #0f3d1f;
+        --green-main: #1a5c2a;
+        --green-light: #2d8c47;
+        --green-pale: #eaf3de;
+        --black: #0d0d0d;
+        --white: #ffffff;
+        --gray: #f5f5f3;
+        --gray-border: #e0e0dc;
+        --text-muted: #6b7280;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: var(--gray);
+        min-height: 100vh;
+      }
+      nav {
+        background: var(--green-dark);
+        padding: 14px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+      nav h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 20px;
+        font-weight: 700;
+        color: var(--white);
+      }
+      nav h1 span {
+        color: #2d8c47;
+      }
+      .nav-links {
+        display: flex;
+        gap: 6px;
+      }
+      .nav-links a {
+        color: #9ca3af;
+        text-decoration: none;
+        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: all 0.2s;
+      }
+      .nav-links a.active,
+      .nav-links a:hover {
+        background: var(--green-main);
+        color: var(--white);
+      }
+      .main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 20px 16px;
+      }
+      .post-box {
+        background: var(--white);
+        border-radius: 14px;
+        padding: 16px;
+        border: 1px solid var(--gray-border);
+        margin-bottom: 20px;
+      }
+      .post-box textarea {
+        width: 100%;
+        border: 1.5px solid var(--gray-border);
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        resize: none;
+        outline: none;
+        height: 80px;
+      }
+      .post-box textarea:focus {
+        border-color: var(--green-main);
+      }
+      .post-box-footer {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        align-items: center;
+      }
+      .post-box-footer select {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1.5px solid var(--gray-border);
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: "Inter", sans-serif;
+        outline: none;
+        color: var(--black);
+      }
+      .btn-post {
+        background: var(--green-main);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+      }
+      .btn-post:hover {
+        background: var(--green-dark);
+      }
+      .card {
+        background: var(--white);
+        border-radius: 14px;
+        padding: 18px;
+        border: 1px solid var(--gray-border);
+        margin-bottom: 14px;
+      }
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--green-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 13px;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+      .card-meta {
+        flex: 1;
+      }
+      .card-meta strong {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--black);
+        display: block;
+      }
+      .card-meta span {
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+      .badge {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 500;
+        background: #fef3c7;
+        color: #92400e;
+      }
+      .card-body {
+        font-size: 14px;
+        color: #374151;
+        line-height: 1.6;
+        margin-bottom: 14px;
+      }
+      .card-actions {
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid var(--gray-border);
+        padding-top: 12px;
+      }
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--text-muted);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 8px;
+        transition: all 0.2s;
+        font-family: "Inter", sans-serif;
+      }
+      .action-btn:hover {
+        background: var(--gray);
+        color: var(--black);
+      }
+      .action-btn.collab:hover {
+        background: var(--green-pale);
+        color: var(--green-main);
+      }
+      .comments {
+        margin-top: 12px;
+        display: none;
+      }
+      .comments.open {
+        display: block;
+      }
+      .comment {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .comment-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 10px;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+      .comment-bubble {
+        background: var(--gray);
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 13px;
+        color: #374151;
+        flex: 1;
+      }
+      .comment-bubble strong {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--black);
+        margin-bottom: 2px;
+      }
+      .comment-input-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .comment-input-row input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1.5px solid var(--gray-border);
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: "Inter", sans-serif;
+        outline: none;
+      }
+      .comment-input-row input:focus {
+        border-color: var(--green-main);
+      }
+      .comment-input-row button {
+        background: var(--green-main);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-size: 13px;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+      }
+      .loading {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-muted);
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <h1>Mzansi<span>Builds</span></h1>
+      <div class="nav-links">
+        <a href="feed.html" class="active">Feed</a>
+        <a href="projects.html">My Projects</a>
+        <a href="wall.html">Wall 🎉</a>
+        <a href="index.html" onclick="logout()">Sign Out</a>
+      </div>
+    </nav>
+    <div class="main">
+      <div class="post-box">
+        <textarea
+          id="post-text"
+          placeholder="What are you building today?"
+        ></textarea>
+        <div class="post-box-footer">
+          <select id="post-stage">
+            <option value="">Select stage...</option>
+            <option>Planning</option>
+            <option>In Progress</option>
+            <option>Testing</option>
+            <option>Completed</option>
+          </select>
+          <select id="post-support">
+            <option value="">Support needed?</option>
+            <option>No support needed</option>
+            <option>Need a designer</option>
+            <option>Need a backend dev</option>
+            <option>Need a frontend dev</option>
+            <option>Need feedback</option>
+          </select>
+          <button class="btn-post" onclick="addPost()">Post</button>
+        </div>
+      </div>
+      <div id="feed"><div class="loading">Loading posts...</div></div>
+    </div>
+
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+      const supabase = createClient(
+        "https://soqkgdjjupqxjvmpsuxd.supabase.co",
+        "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
+      );
+
+      const userName = localStorage.getItem("user_name") || "Anonymous";
+
+      window.logout = function () {
+        localStorage.clear();
+        supabase.auth.signOut();
+      };
+
+      function getInitials(name) {
+        return name
+          .split(" ")
+          .map((w) => w[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2);
+      }
+
+      function timeAgo(date) {
+        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        if (seconds < 60) return "just now";
+        if (seconds < 3600) return Math.floor(seconds / 60) + "m ago";
+        if (seconds < 86400) return Math.floor(seconds / 3600) + "h ago";
+        return Math.floor(seconds / 86400) + "d ago";
+      }
+
+      async function loadPosts() {
+        const { data: posts } = await supabase
+          .from("posts")
+          .select("*, comments(*)")
+          .order("created_at", { ascending: false });
+
+        const feed = document.getElementById("feed");
+        if (!posts || posts.length === 0) {
+          feed.innerHTML =
+            '<div class="loading">No posts yet. Be the first to post!</div>';
+          return;
+        }
+
+        feed.innerHTML = posts
+          .map(
+            (post) => `
+        <div class="card">
+          <div class="card-header">
+            <div class="avatar">${getInitials(post.author_name || "U")}</div>
+            <div class="card-meta">
+              <strong>${post.author_name || "Anonymous"}</strong>
+              <span>${timeAgo(post.created_at)} · Stage: <b>${post.stage || "Not set"}</b></span>
+            </div>
+            ${post.support_needed ? `<span class="badge">${post.support_needed}</span>` : ""}
+          </div>
+          <div class="card-body">${post.content}</div>
+          <div class="card-actions">
+            <button class="action-btn" onclick="toggleComments('comments-${post.id}')">💬 Comments (${post.comments?.length || 0})</button>
+            <button class="action-btn collab" onclick="raiseHand(this)">✋ Raise hand</button>
+          </div>
+          <div class="comments" id="comments-${post.id}">
+            ${(post.comments || [])
+              .map(
+                (c) => `
+              <div class="comment">
+                <div class="comment-avatar">${getInitials(c.author_name || "U")}</div>
+                <div class="comment-bubble"><strong>${c.author_name || "Anonymous"}</strong>${c.content}</div>
+              </div>
+            `,
+              )
+              .join("")}
+            <div class="comment-input-row">
+              <input type="text" placeholder="Add a comment..." id="ci-${post.id}"/>
+              <button onclick="addComment('${post.id}', 'ci-${post.id}')">Send</button>
+            </div>
+          </div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      window.toggleComments = function (id) {
+        document.getElementById(id).classList.toggle("open");
+      };
+
+      window.raiseHand = function (btn) {
+        btn.textContent = "✅ Hand raised!";
+        btn.disabled = true;
+      };
+
+      window.addComment = async function (postId, inputId) {
+        const input = document.getElementById(inputId);
+        const text = input.value.trim();
+        if (!text) return;
+        await supabase.from("comments").insert({
+          content: text,
+          post_id: postId,
+          author_name: userName,
+        });
+        input.value = "";
+        loadPosts();
+      };
+
+      window.addPost = async function () {
+        const text = document.getElementById("post-text").value.trim();
+        const stage = document.getElementById("post-stage").value;
+        const support = document.getElementById("post-support").value;
+        if (!text) return alert("Please write something first!");
+        await supabase.from("posts").insert({
+          content: text,
+          stage,
+          support_needed: support,
+          author_name: userName,
+        });
+        document.getElementById("post-text").value = "";
+        loadPosts();
+      };
+
+      loadPosts();
+    </script>
+  </body>
+</html>
