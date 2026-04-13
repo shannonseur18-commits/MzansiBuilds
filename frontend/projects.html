@@ -26,6 +26,8 @@
         --gray: #f5f5f3;
         --gray-border: #e0e0dc;
         --text-muted: #6b7280;
+        --red: #ef4444;
+        --red-pale: #fef2f2;
       }
       body {
         font-family: "Inter", sans-serif;
@@ -73,11 +75,13 @@
         margin: 0 auto;
         padding: 24px 16px;
       }
+
+      /* Page header with title and new project button */
       .page-header {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 20px;
+        margin-bottom: 12px;
       }
       .page-header h2 {
         font-family: "Space Grotesk", sans-serif;
@@ -99,6 +103,20 @@
       .btn-new:hover {
         background: var(--green-dark);
       }
+
+      /* Description text explaining what this page does */
+      .page-desc {
+        font-size: 13px;
+        color: var(--text-muted);
+        margin-bottom: 20px;
+        background: var(--white);
+        border-radius: 10px;
+        padding: 12px 16px;
+        border: 1px solid var(--gray-border);
+        border-left: 4px solid var(--green-main);
+      }
+
+      /* Modal overlay for creating a new project */
       .modal-overlay {
         display: none;
         position: fixed;
@@ -184,6 +202,11 @@
         font-family: "Inter", sans-serif;
         cursor: pointer;
       }
+      .btn-save:hover {
+        background: var(--green-dark);
+      }
+
+      /* Project cards */
       .project-card {
         background: var(--white);
         border-radius: 14px;
@@ -197,13 +220,13 @@
         justify-content: space-between;
         margin-bottom: 10px;
       }
-      .project-header h3 {
+      .project-title h3 {
         font-family: "Space Grotesk", sans-serif;
         font-size: 16px;
         font-weight: 700;
         color: var(--black);
       }
-      .project-header p {
+      .project-title p {
         font-size: 13px;
         color: var(--text-muted);
         margin-top: 3px;
@@ -228,6 +251,8 @@
         background: #fef3c7;
         color: #92400e;
       }
+
+      /* Milestones list */
       .milestones h4 {
         font-size: 13px;
         font-weight: 500;
@@ -242,6 +267,9 @@
         border-bottom: 1px solid var(--gray-border);
         font-size: 13px;
         color: var(--black);
+      }
+      .milestone:last-of-type {
+        border-bottom: none;
       }
       .milestone-dot {
         width: 10px;
@@ -270,9 +298,15 @@
         cursor: pointer;
         font-family: "Inter", sans-serif;
       }
-      .complete-btn {
+
+      /* Project action buttons */
+      .project-actions {
+        display: flex;
+        gap: 10px;
         margin-top: 14px;
-        width: 100%;
+      }
+      .complete-btn {
+        flex: 1;
         padding: 10px;
         background: var(--black);
         color: var(--white);
@@ -282,7 +316,30 @@
         font-weight: 500;
         font-family: "Inter", sans-serif;
         cursor: pointer;
+        transition: background 0.2s;
       }
+      .complete-btn:hover {
+        background: #333;
+      }
+
+      /* Delete button - red to indicate destructive action */
+      .delete-btn {
+        padding: 10px 16px;
+        background: var(--red-pale);
+        color: var(--red);
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 500;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .delete-btn:hover {
+        background: var(--red);
+        color: var(--white);
+      }
+
       .loading {
         text-align: center;
         padding: 20px;
@@ -300,21 +357,31 @@
         <a href="index.html">Sign Out</a>
       </div>
     </nav>
+
     <div class="main">
       <div class="page-header">
         <h2>My Projects</h2>
         <button class="btn-new" onclick="openModal()">+ New Project</button>
       </div>
+
+      <!-- Description explaining what this page does -->
+      <div class="page-desc">
+        📁 Track all the projects you are working on. Add milestones to show
+        your progress and mark projects complete to appear on the Celebration
+        Wall!
+      </div>
+
+      <!-- Modal for creating a new project -->
       <div class="modal-overlay" id="modal">
         <div class="modal">
           <h3>Create New Project</h3>
           <div class="form-group">
-            <label>Project name</label
-            ><input type="text" id="proj-name" placeholder="e.g. BudgetApp" />
+            <label>Project name</label>
+            <input type="text" id="proj-name" placeholder="e.g. BudgetApp" />
           </div>
           <div class="form-group">
-            <label>Description</label
-            ><textarea
+            <label>Description</label>
+            <textarea
               id="proj-desc"
               placeholder="What are you building?"
             ></textarea>
@@ -346,19 +413,27 @@
           </div>
         </div>
       </div>
+
+      <!-- Projects list loaded from Supabase -->
       <div id="projects-list">
-        <div class="loading">Loading projects...</div>
+        <div class="loading">Loading your projects...</div>
       </div>
     </div>
 
     <script type="module">
+      // Import Supabase client
       import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+      // Initialise Supabase with project URL and public key
       const supabase = createClient(
         "https://soqkgdjjupqxjvmpsuxd.supabase.co",
         "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
       );
+
+      // Get logged in user name from localStorage
       const userName = localStorage.getItem("user_name") || "Anonymous";
 
+      // Load all projects for the current user from Supabase
       async function loadProjects() {
         const { data: projects } = await supabase
           .from("projects")
@@ -367,17 +442,23 @@
           .order("created_at", { ascending: false });
 
         const list = document.getElementById("projects-list");
+
         if (!projects || projects.length === 0) {
           list.innerHTML =
-            '<div class="loading">No projects yet. Create your first one!</div>';
+            '<div class="loading">No projects yet. Click "+ New Project" to get started!</div>';
           return;
         }
+
+        // Render each project as a card
         list.innerHTML = projects
           .map(
             (p) => `
         <div class="project-card">
           <div class="project-header">
-            <div><h3>${p.name}</h3><p>${p.description || ""}</p></div>
+            <div class="project-title">
+              <h3>${p.name}</h3>
+              <p>${p.description || ""}</p>
+            </div>
           </div>
           <div class="badges">
             <span class="badge badge-green">${p.stage}</span>
@@ -388,30 +469,44 @@
             ${(p.milestones || [])
               .map(
                 (m) => `
-              <div class="milestone"><div class="milestone-dot"></div>${m.title}</div>
+              <div class="milestone">
+                <div class="milestone-dot"></div>${m.title}
+              </div>
             `,
               )
               .join("")}
             <div class="add-milestone">
-              <input type="text" placeholder="Add milestone..." id="ms-${p.id}"/>
+              <input type="text" placeholder="Add a milestone..." id="ms-${p.id}"/>
               <button onclick="addMilestone('${p.id}', 'ms-${p.id}')">Add</button>
             </div>
           </div>
-          ${!p.is_completed ? `<button class="complete-btn" onclick="completeProject('${p.id}')">Mark as Completed 🎉</button>` : '<p style="text-align:center;color:var(--green-main);margin-top:12px;font-weight:500;">✅ Completed!</p>'}
+          <div class="project-actions">
+            ${
+              !p.is_completed
+                ? `<button class="complete-btn" onclick="completeProject('${p.id}')">Mark as Completed 🎉</button>`
+                : `<p style="text-align:center;color:var(--green-main);font-weight:500;padding:10px;">✅ Completed!</p>`
+            }
+            <button class="delete-btn" onclick="deleteProject('${p.id}')">🗑 Delete</button>
+          </div>
         </div>
       `,
           )
           .join("");
       }
 
+      // Open the new project modal
       window.openModal = () =>
         document.getElementById("modal").classList.add("open");
+
+      // Close the new project modal
       window.closeModal = () =>
         document.getElementById("modal").classList.remove("open");
 
+      // Save a new project to Supabase
       window.saveProject = async function () {
         const name = document.getElementById("proj-name").value.trim();
         if (!name) return alert("Please enter a project name!");
+
         await supabase.from("projects").insert({
           name,
           description: document.getElementById("proj-desc").value,
@@ -419,21 +514,25 @@
           support_needed: document.getElementById("proj-support").value,
           author_name: userName,
         });
+
         closeModal();
         loadProjects();
       };
 
+      // Add a milestone to a project
       window.addMilestone = async function (projectId, inputId) {
         const input = document.getElementById(inputId);
         const text = input.value.trim();
         if (!text) return;
-        await supabase
-          .from("milestones")
-          .insert({ title: text, project_id: projectId });
+        await supabase.from("milestones").insert({
+          title: text,
+          project_id: projectId,
+        });
         input.value = "";
         loadProjects();
       };
 
+      // Mark a project as completed — it will appear on the Celebration Wall
       window.completeProject = async function (projectId) {
         await supabase
           .from("projects")
@@ -442,6 +541,23 @@
         loadProjects();
       };
 
+      // Delete a project and its milestones after user confirms
+      window.deleteProject = async function (projectId) {
+        const confirmed = confirm(
+          "Are you sure you want to delete this project? This cannot be undone.",
+        );
+        if (!confirmed) return;
+
+        // Delete milestones first due to foreign key relationship
+        await supabase.from("milestones").delete().eq("project_id", projectId);
+
+        // Then delete the project itself
+        await supabase.from("projects").delete().eq("id", projectId);
+
+        loadProjects();
+      };
+
+      // Load projects when page opens
       loadProjects();
     </script>
   </body>

@@ -73,6 +73,35 @@
         margin: 0 auto;
         padding: 20px 16px;
       }
+
+      /* Welcome banner - shows what the feed is about */
+      .welcome-banner {
+        background: var(--green-dark);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 20px;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .welcome-banner .icon {
+        font-size: 32px;
+        flex-shrink: 0;
+      }
+      .welcome-banner h3 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .welcome-banner p {
+        font-size: 13px;
+        color: #9ca3af;
+        line-height: 1.5;
+      }
+
+      /* Post creation box */
       .post-box {
         background: var(--white);
         border-radius: 14px;
@@ -124,6 +153,8 @@
       .btn-post:hover {
         background: var(--green-dark);
       }
+
+      /* Feed cards */
       .card {
         background: var(--white);
         border-radius: 14px;
@@ -205,6 +236,8 @@
         background: var(--green-pale);
         color: var(--green-main);
       }
+
+      /* Comments section */
       .comments {
         margin-top: 12px;
         display: none;
@@ -289,15 +322,29 @@
         <a href="index.html" onclick="logout()">Sign Out</a>
       </div>
     </nav>
+
     <div class="main">
+      <!-- Welcome banner explaining what the feed is -->
+      <div class="welcome-banner">
+        <div class="icon">🚀</div>
+        <div>
+          <h3>Welcome to the Live Feed</h3>
+          <p>
+            See what other SA developers are building. Share your progress,
+            comment on projects and raise your hand to collaborate!
+          </p>
+        </div>
+      </div>
+
+      <!-- Post creation box -->
       <div class="post-box">
         <textarea
           id="post-text"
-          placeholder="What are you building today?"
+          placeholder="What are you building today? Share your progress with the community..."
         ></textarea>
         <div class="post-box-footer">
           <select id="post-stage">
-            <option value="">Select stage...</option>
+            <option value="">Project stage...</option>
             <option>Planning</option>
             <option>In Progress</option>
             <option>Testing</option>
@@ -314,23 +361,31 @@
           <button class="btn-post" onclick="addPost()">Post</button>
         </div>
       </div>
+
+      <!-- Live feed posts loaded from Supabase -->
       <div id="feed"><div class="loading">Loading posts...</div></div>
     </div>
 
     <script type="module">
+      // Import Supabase client
       import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+      // Initialise Supabase with project URL and public key
       const supabase = createClient(
         "https://soqkgdjjupqxjvmpsuxd.supabase.co",
         "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
       );
 
+      // Get logged in user name from localStorage
       const userName = localStorage.getItem("user_name") || "Anonymous";
 
+      // Sign out and clear local storage
       window.logout = function () {
         localStorage.clear();
         supabase.auth.signOut();
       };
 
+      // Get initials from a full name e.g. "Shannon Seur" → "SS"
       function getInitials(name) {
         return name
           .split(" ")
@@ -340,6 +395,7 @@
           .slice(0, 2);
       }
 
+      // Convert timestamp to human readable time e.g. "2h ago"
       function timeAgo(date) {
         const seconds = Math.floor((new Date() - new Date(date)) / 1000);
         if (seconds < 60) return "just now";
@@ -348,6 +404,7 @@
         return Math.floor(seconds / 86400) + "d ago";
       }
 
+      // Load all posts from Supabase and render them in the feed
       async function loadPosts() {
         const { data: posts } = await supabase
           .from("posts")
@@ -355,12 +412,14 @@
           .order("created_at", { ascending: false });
 
         const feed = document.getElementById("feed");
+
         if (!posts || posts.length === 0) {
           feed.innerHTML =
             '<div class="loading">No posts yet. Be the first to post!</div>';
           return;
         }
 
+        // Render each post as a card
         feed.innerHTML = posts
           .map(
             (post) => `
@@ -375,7 +434,9 @@
           </div>
           <div class="card-body">${post.content}</div>
           <div class="card-actions">
-            <button class="action-btn" onclick="toggleComments('comments-${post.id}')">💬 Comments (${post.comments?.length || 0})</button>
+            <button class="action-btn" onclick="toggleComments('comments-${post.id}')">
+              💬 Comments (${post.comments?.length || 0})
+            </button>
             <button class="action-btn collab" onclick="raiseHand(this)">✋ Raise hand</button>
           </div>
           <div class="comments" id="comments-${post.id}">
@@ -384,13 +445,15 @@
                 (c) => `
               <div class="comment">
                 <div class="comment-avatar">${getInitials(c.author_name || "U")}</div>
-                <div class="comment-bubble"><strong>${c.author_name || "Anonymous"}</strong>${c.content}</div>
+                <div class="comment-bubble">
+                  <strong>${c.author_name || "Anonymous"}</strong>${c.content}
+                </div>
               </div>
             `,
               )
               .join("")}
             <div class="comment-input-row">
-              <input type="text" placeholder="Add a comment..." id="ci-${post.id}"/>
+              <input type="text" placeholder="Write a comment..." id="ci-${post.id}"/>
               <button onclick="addComment('${post.id}', 'ci-${post.id}')">Send</button>
             </div>
           </div>
@@ -400,15 +463,18 @@
           .join("");
       }
 
+      // Toggle comments section open and closed
       window.toggleComments = function (id) {
         document.getElementById(id).classList.toggle("open");
       };
 
+      // Mark raise hand button as raised
       window.raiseHand = function (btn) {
         btn.textContent = "✅ Hand raised!";
         btn.disabled = true;
       };
 
+      // Add a comment to a post and reload the feed
       window.addComment = async function (postId, inputId) {
         const input = document.getElementById(inputId);
         const text = input.value.trim();
@@ -422,11 +488,12 @@
         loadPosts();
       };
 
+      // Create a new post and reload the feed
       window.addPost = async function () {
         const text = document.getElementById("post-text").value.trim();
         const stage = document.getElementById("post-stage").value;
         const support = document.getElementById("post-support").value;
-        if (!text) return alert("Please write something first!");
+        if (!text) return alert("Please write something before posting!");
         await supabase.from("posts").insert({
           content: text,
           stage,
@@ -437,6 +504,7 @@
         loadPosts();
       };
 
+      // Load posts when page opens
       loadPosts();
     </script>
   </body>

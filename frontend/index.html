@@ -26,6 +26,7 @@
         --gray: #f5f5f3;
         --gray-border: #e0e0dc;
         --text-muted: #6b7280;
+        --red: #ef4444;
       }
       body {
         font-family: "Inter", sans-serif;
@@ -117,6 +118,40 @@
       input:focus {
         border-color: var(--green-main);
       }
+      input.error-input {
+        border-color: var(--red);
+      }
+      .password-wrapper {
+        position: relative;
+      }
+      .password-wrapper input {
+        padding-right: 44px;
+      }
+      .eye-btn {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text-muted);
+        padding: 4px;
+        display: flex;
+        align-items: center;
+      }
+      .eye-btn:hover {
+        color: var(--black);
+      }
+      .field-error {
+        font-size: 12px;
+        color: var(--red);
+        margin-top: 5px;
+        display: none;
+      }
+      .field-error.show {
+        display: block;
+      }
       .btn {
         width: 100%;
         padding: 13px;
@@ -134,20 +169,77 @@
       .btn:hover {
         background: var(--green-dark);
       }
-      .error {
-        color: red;
-        font-size: 13px;
-        margin-top: 8px;
-        text-align: center;
+      .btn:disabled {
+        background: #9ca3af;
+        cursor: not-allowed;
       }
-      .success {
+      .error-msg {
+        color: var(--red);
+        font-size: 13px;
+        margin-top: 10px;
+        text-align: center;
+        display: none;
+      }
+      .error-msg.show {
+        display: block;
+      }
+      .success-msg {
         color: var(--green-main);
         font-size: 13px;
-        margin-top: 8px;
+        margin-top: 10px;
         text-align: center;
+        display: none;
+      }
+      .success-msg.show {
+        display: block;
+      }
+      .forgot-link {
+        text-align: right;
+        margin-top: -10px;
+        margin-bottom: 14px;
+      }
+      .forgot-link a {
+        font-size: 12px;
+        color: var(--green-main);
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .forgot-link a:hover {
+        text-decoration: underline;
+      }
+      .divider {
+        text-align: center;
+        font-size: 12px;
+        color: var(--text-muted);
+        margin: 16px 0;
+        position: relative;
+      }
+      .divider::before,
+      .divider::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 42%;
+        height: 1px;
+        background: var(--gray-border);
+      }
+      .divider::before {
+        left: 0;
+      }
+      .divider::after {
+        right: 0;
       }
       .hidden {
         display: none;
+      }
+      .tagline {
+        text-align: center;
+        font-size: 12px;
+        color: #9ca3af;
+        margin-top: 20px;
+      }
+      .tagline span {
+        color: var(--green-light);
       }
     </style>
   </head>
@@ -157,11 +249,14 @@
         <h1>Mzansi<span>Builds</span></h1>
         <p>Build in public. Grow together. 🇿🇦</p>
       </div>
+
       <div class="card">
         <div class="tabs">
           <button class="tab active" onclick="showTab('login')">Sign In</button>
           <button class="tab" onclick="showTab('register')">Register</button>
         </div>
+
+        <!-- LOGIN FORM -->
         <div id="login-form">
           <div class="form-group">
             <label>Email address</label>
@@ -170,40 +265,195 @@
               id="login-email"
               placeholder="you@example.com"
             />
+            <p class="field-error" id="login-email-err">
+              Please enter your email address
+            </p>
           </div>
           <div class="form-group">
             <label>Password</label>
-            <input type="password" id="login-password" placeholder="••••••••" />
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="login-password"
+                placeholder="••••••••"
+              />
+              <button
+                class="eye-btn"
+                onclick="toggleEye('login-password', 'eye1')"
+                type="button"
+              >
+                <svg
+                  id="eye1"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+            <p class="field-error" id="login-pass-err">
+              Please enter your password
+            </p>
+          </div>
+          <div class="forgot-link">
+            <a onclick="showForgot()">Forgot password?</a>
           </div>
           <button class="btn" onclick="login()">Sign In</button>
-          <p id="login-msg"></p>
+          <p class="error-msg" id="login-error"></p>
+          <p class="success-msg" id="login-success"></p>
+          <div class="divider">or</div>
+          <p
+            style="
+              text-align: center;
+              font-size: 13px;
+              color: var(--text-muted);
+            "
+          >
+            No account?
+            <span
+              style="
+                color: var(--green-main);
+                cursor: pointer;
+                font-weight: 500;
+              "
+              onclick="showTab('register')"
+              >Register here</span
+            >
+          </p>
         </div>
+
+        <!-- REGISTER FORM -->
         <div id="register-form" class="hidden">
           <div class="form-group">
             <label>Full name</label>
             <input type="text" id="reg-name" placeholder="Shannon Seur" />
+            <p class="field-error" id="reg-name-err">
+              Please enter your full name
+            </p>
           </div>
           <div class="form-group">
             <label>Email address</label>
             <input type="email" id="reg-email" placeholder="you@example.com" />
+            <p class="field-error" id="reg-email-err">
+              Please enter a valid email address
+            </p>
           </div>
           <div class="form-group">
             <label>Password</label>
-            <input
-              type="password"
-              id="reg-password"
-              placeholder="Create a password"
-            />
+            <div class="password-wrapper">
+              <input
+                type="password"
+                id="reg-password"
+                placeholder="Create a password (min 6 characters)"
+              />
+              <button
+                class="eye-btn"
+                onclick="toggleEye('reg-password', 'eye2')"
+                type="button"
+              >
+                <svg
+                  id="eye2"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+            <p class="field-error" id="reg-pass-err">
+              Password must be at least 6 characters
+            </p>
           </div>
           <button class="btn" onclick="register()">Create Account</button>
-          <p id="reg-msg"></p>
+          <p class="error-msg" id="reg-error"></p>
+          <p class="success-msg" id="reg-success"></p>
+          <div class="divider">or</div>
+          <p
+            style="
+              text-align: center;
+              font-size: 13px;
+              color: var(--text-muted);
+            "
+          >
+            Already have an account?
+            <span
+              style="
+                color: var(--green-main);
+                cursor: pointer;
+                font-weight: 500;
+              "
+              onclick="showTab('login')"
+              >Sign in</span
+            >
+          </p>
+        </div>
+
+        <!-- FORGOT PASSWORD FORM -->
+        <div id="forgot-form" class="hidden">
+          <p
+            style="
+              font-size: 14px;
+              color: var(--text-muted);
+              margin-bottom: 20px;
+            "
+          >
+            Enter your email and we'll send you a reset link.
+          </p>
+          <div class="form-group">
+            <label>Email address</label>
+            <input
+              type="email"
+              id="forgot-email"
+              placeholder="you@example.com"
+            />
+            <p class="field-error" id="forgot-email-err">
+              Please enter your email address
+            </p>
+          </div>
+          <button class="btn" onclick="forgotPassword()">
+            Send Reset Link
+          </button>
+          <p class="error-msg" id="forgot-error"></p>
+          <p class="success-msg" id="forgot-success"></p>
+          <div class="divider">or</div>
+          <p
+            style="
+              text-align: center;
+              font-size: 13px;
+              color: var(--text-muted);
+            "
+          >
+            Remember it?
+            <span
+              style="
+                color: var(--green-main);
+                cursor: pointer;
+                font-weight: 500;
+              "
+              onclick="showTab('login')"
+              >Sign in</span
+            >
+          </p>
         </div>
       </div>
+
+      <p class="tagline">
+        Powered by <span>South African developers</span> building the future
+      </p>
     </div>
 
     <script type="module">
       import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
       const supabase = createClient(
         "https://soqkgdjjupqxjvmpsuxd.supabase.co",
         "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
@@ -216,6 +466,9 @@
         document
           .getElementById("register-form")
           .classList.toggle("hidden", tab !== "register");
+        document
+          .getElementById("forgot-form")
+          .classList.toggle("hidden", tab !== "forgot");
         document.querySelectorAll(".tab").forEach((t, i) => {
           t.classList.toggle(
             "active",
@@ -224,51 +477,102 @@
         });
       };
 
-      window.register = async function () {
-        const fullName = document.getElementById("reg-name").value.trim();
-        const email = document.getElementById("reg-email").value.trim();
-        const password = document.getElementById("reg-password").value;
-        const msg = document.getElementById("reg-msg");
-
-        if (!fullName || !email || !password) {
-          msg.className = "error";
-          msg.textContent = "Please fill in all fields!";
-          return;
-        }
-
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { data: { full_name: fullName } },
-        });
-
-        if (error) {
-          msg.className = "error";
-          msg.textContent = error.message;
-          return;
-        }
-
-        await supabase.from("users").insert({ full_name: fullName, email });
-        msg.className = "success";
-        msg.textContent = "Account created! Signing you in...";
-        localStorage.setItem("user_name", fullName);
-        localStorage.setItem("user_email", email);
-        setTimeout(() => (window.location.href = "feed.html"), 1500);
+      window.showForgot = function () {
+        document.getElementById("login-form").classList.add("hidden");
+        document.getElementById("register-form").classList.add("hidden");
+        document.getElementById("forgot-form").classList.remove("hidden");
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
       };
+
+      window.toggleEye = function (inputId, iconId) {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        if (input.type === "password") {
+          input.type = "text";
+          icon.innerHTML = `
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        `;
+        } else {
+          input.type = "password";
+          icon.innerHTML = `
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        `;
+        }
+      };
+
+      function showError(id, msg) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.classList.add("show");
+      }
+
+      function hideError(id) {
+        document.getElementById(id).classList.remove("show");
+      }
+
+      function clearInput(id) {
+        document.getElementById(id).classList.remove("error-input");
+      }
 
       window.login = async function () {
         const email = document.getElementById("login-email").value.trim();
         const password = document.getElementById("login-password").value;
-        const msg = document.getElementById("login-msg");
+        let valid = true;
+
+        hideError("login-email-err");
+        hideError("login-pass-err");
+        hideError("login-error");
+
+        if (!email) {
+          showError("login-email-err", "Please enter your email address");
+          document.getElementById("login-email").classList.add("error-input");
+          valid = false;
+        } else if (!email.includes("@")) {
+          showError("login-email-err", "Please enter a valid email address");
+          document.getElementById("login-email").classList.add("error-input");
+          valid = false;
+        } else {
+          document
+            .getElementById("login-email")
+            .classList.remove("error-input");
+        }
+
+        if (!password) {
+          showError("login-pass-err", "Please enter your password");
+          document
+            .getElementById("login-password")
+            .classList.add("error-input");
+          valid = false;
+        } else {
+          document
+            .getElementById("login-password")
+            .classList.remove("error-input");
+        }
+
+        if (!valid) return;
+
+        const btn = document.querySelector("#login-form .btn");
+        btn.disabled = true;
+        btn.textContent = "Signing in...";
 
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
+        btn.disabled = false;
+        btn.textContent = "Sign In";
+
         if (error) {
-          msg.className = "error";
-          msg.textContent = "Invalid email or password!";
+          showError(
+            "login-error",
+            "Incorrect email or password. Please try again.",
+          );
           return;
         }
 
@@ -276,6 +580,107 @@
         localStorage.setItem("user_name", fullName);
         localStorage.setItem("user_email", email);
         window.location.href = "feed.html";
+      };
+
+      window.register = async function () {
+        const fullName = document.getElementById("reg-name").value.trim();
+        const email = document.getElementById("reg-email").value.trim();
+        const password = document.getElementById("reg-password").value;
+        let valid = true;
+
+        hideError("reg-name-err");
+        hideError("reg-email-err");
+        hideError("reg-pass-err");
+        hideError("reg-error");
+
+        if (!fullName) {
+          showError("reg-name-err", "Please enter your full name");
+          document.getElementById("reg-name").classList.add("error-input");
+          valid = false;
+        } else {
+          document.getElementById("reg-name").classList.remove("error-input");
+        }
+
+        if (!email || !email.includes("@")) {
+          showError("reg-email-err", "Please enter a valid email address");
+          document.getElementById("reg-email").classList.add("error-input");
+          valid = false;
+        } else {
+          document.getElementById("reg-email").classList.remove("error-input");
+        }
+
+        if (!password || password.length < 6) {
+          showError("reg-pass-err", "Password must be at least 6 characters");
+          document.getElementById("reg-password").classList.add("error-input");
+          valid = false;
+        } else {
+          document
+            .getElementById("reg-password")
+            .classList.remove("error-input");
+        }
+
+        if (!valid) return;
+
+        const btn = document.querySelector("#register-form .btn");
+        btn.disabled = true;
+        btn.textContent = "Creating account...";
+
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName } },
+        });
+
+        btn.disabled = false;
+        btn.textContent = "Create Account";
+
+        if (error) {
+          showError("reg-error", error.message);
+          return;
+        }
+
+        await supabase.from("users").insert({ full_name: fullName, email });
+        document.getElementById("reg-success").textContent =
+          "Account created! Signing you in...";
+        document.getElementById("reg-success").classList.add("show");
+        localStorage.setItem("user_name", fullName);
+        localStorage.setItem("user_email", email);
+        setTimeout(() => (window.location.href = "feed.html"), 1500);
+      };
+
+      window.forgotPassword = async function () {
+        const email = document.getElementById("forgot-email").value.trim();
+
+        hideError("forgot-email-err");
+        hideError("forgot-error");
+
+        if (!email || !email.includes("@")) {
+          showError("forgot-email-err", "Please enter a valid email address");
+          document.getElementById("forgot-email").classList.add("error-input");
+          return;
+        }
+
+        document.getElementById("forgot-email").classList.remove("error-input");
+
+        const btn = document.querySelector("#forgot-form .btn");
+        btn.disabled = true;
+        btn.textContent = "Sending...";
+
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: "https://stirring-panda-0a1f40.netlify.app",
+        });
+
+        btn.disabled = false;
+        btn.textContent = "Send Reset Link";
+
+        if (error) {
+          showError("forgot-error", error.message);
+          return;
+        }
+
+        document.getElementById("forgot-success").textContent =
+          "Reset link sent! Check your email 📧";
+        document.getElementById("forgot-success").classList.add("show");
       };
     </script>
   </body>
