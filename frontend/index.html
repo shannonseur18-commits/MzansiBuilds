@@ -648,9 +648,14 @@
         hideError("reg-pass-err");
         hideError("reg-error");
 
-        // Validate full name
+        // Validate full name — only letters and spaces allowed
+        const nameRegex = /^[a-zA-Z\s]+$/;
         if (!fullName) {
           showError("reg-name-err", "Please enter your full name");
+          document.getElementById("reg-name").classList.add("error-input");
+          valid = false;
+        } else if (!nameRegex.test(fullName)) {
+          showError("reg-name-err", "Name can only contain letters and spaces");
           document.getElementById("reg-name").classList.add("error-input");
           valid = false;
         } else {
