@@ -453,12 +453,58 @@
     </div>
 
     <script type="module">
+      // Import Supabase client for authentication
       import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
+      // Initialise Supabase with project URL and public key
       const supabase = createClient(
         "https://soqkgdjjupqxjvmpsuxd.supabase.co",
         "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
       );
 
+      // Clear login email error as user types
+      document
+        .getElementById("login-email")
+        .addEventListener("input", function () {
+          this.classList.remove("error-input");
+          document.getElementById("login-email-err").classList.remove("show");
+          document.getElementById("login-error").classList.remove("show");
+        });
+
+      // Clear login password error as user types
+      document
+        .getElementById("login-password")
+        .addEventListener("input", function () {
+          this.classList.remove("error-input");
+          document.getElementById("login-pass-err").classList.remove("show");
+          document.getElementById("login-error").classList.remove("show");
+        });
+
+      // Clear register name error as user types
+      document
+        .getElementById("reg-name")
+        .addEventListener("input", function () {
+          this.classList.remove("error-input");
+          document.getElementById("reg-name-err").classList.remove("show");
+        });
+
+      // Clear register email error as user types
+      document
+        .getElementById("reg-email")
+        .addEventListener("input", function () {
+          this.classList.remove("error-input");
+          document.getElementById("reg-email-err").classList.remove("show");
+        });
+
+      // Clear register password error as user types
+      document
+        .getElementById("reg-password")
+        .addEventListener("input", function () {
+          this.classList.remove("error-input");
+          document.getElementById("reg-pass-err").classList.remove("show");
+        });
+
+      // Switch between login, register and forgot password tabs
       window.showTab = function (tab) {
         document
           .getElementById("login-form")
@@ -477,6 +523,7 @@
         });
       };
 
+      // Show the forgot password form
       window.showForgot = function () {
         document.getElementById("login-form").classList.add("hidden");
         document.getElementById("register-form").classList.add("hidden");
@@ -486,6 +533,7 @@
           .forEach((t) => t.classList.remove("active"));
       };
 
+      // Toggle password visibility on eye button click
       window.toggleEye = function (inputId, iconId) {
         const input = document.getElementById(inputId);
         const icon = document.getElementById(iconId);
@@ -505,29 +553,30 @@
         }
       };
 
+      // Show a field level error message
       function showError(id, msg) {
         const el = document.getElementById(id);
         el.textContent = msg;
         el.classList.add("show");
       }
 
+      // Hide a field level error message
       function hideError(id) {
         document.getElementById(id).classList.remove("show");
       }
 
-      function clearInput(id) {
-        document.getElementById(id).classList.remove("error-input");
-      }
-
+      // Login with email and password validation
       window.login = async function () {
         const email = document.getElementById("login-email").value.trim();
         const password = document.getElementById("login-password").value;
         let valid = true;
 
+        // Reset all error states before validating
         hideError("login-email-err");
         hideError("login-pass-err");
         hideError("login-error");
 
+        // Validate email field
         if (!email) {
           showError("login-email-err", "Please enter your email address");
           document.getElementById("login-email").classList.add("error-input");
@@ -542,6 +591,7 @@
             .classList.remove("error-input");
         }
 
+        // Validate password field
         if (!password) {
           showError("login-pass-err", "Please enter your password");
           document
@@ -556,10 +606,12 @@
 
         if (!valid) return;
 
+        // Disable button while authenticating
         const btn = document.querySelector("#login-form .btn");
         btn.disabled = true;
         btn.textContent = "Signing in...";
 
+        // Attempt login with Supabase auth
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -576,23 +628,27 @@
           return;
         }
 
+        // Store user info and redirect to feed
         const fullName = data.user.user_metadata?.full_name || email;
         localStorage.setItem("user_name", fullName);
         localStorage.setItem("user_email", email);
         window.location.href = "feed.html";
       };
 
+      // Register a new account with validation
       window.register = async function () {
         const fullName = document.getElementById("reg-name").value.trim();
         const email = document.getElementById("reg-email").value.trim();
         const password = document.getElementById("reg-password").value;
         let valid = true;
 
+        // Reset all error states before validating
         hideError("reg-name-err");
         hideError("reg-email-err");
         hideError("reg-pass-err");
         hideError("reg-error");
 
+        // Validate full name
         if (!fullName) {
           showError("reg-name-err", "Please enter your full name");
           document.getElementById("reg-name").classList.add("error-input");
@@ -601,6 +657,7 @@
           document.getElementById("reg-name").classList.remove("error-input");
         }
 
+        // Validate email
         if (!email || !email.includes("@")) {
           showError("reg-email-err", "Please enter a valid email address");
           document.getElementById("reg-email").classList.add("error-input");
@@ -609,6 +666,7 @@
           document.getElementById("reg-email").classList.remove("error-input");
         }
 
+        // Validate password length
         if (!password || password.length < 6) {
           showError("reg-pass-err", "Password must be at least 6 characters");
           document.getElementById("reg-password").classList.add("error-input");
@@ -621,10 +679,12 @@
 
         if (!valid) return;
 
+        // Disable button while creating account
         const btn = document.querySelector("#register-form .btn");
         btn.disabled = true;
         btn.textContent = "Creating account...";
 
+        // Create account with Supabase auth
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
@@ -639,6 +699,7 @@
           return;
         }
 
+        // Save user to users table and redirect to feed
         await supabase.from("users").insert({ full_name: fullName, email });
         document.getElementById("reg-success").textContent =
           "Account created! Signing you in...";
@@ -648,12 +709,14 @@
         setTimeout(() => (window.location.href = "feed.html"), 1500);
       };
 
+      // Send password reset email to user
       window.forgotPassword = async function () {
         const email = document.getElementById("forgot-email").value.trim();
 
         hideError("forgot-email-err");
         hideError("forgot-error");
 
+        // Validate email before sending reset link
         if (!email || !email.includes("@")) {
           showError("forgot-email-err", "Please enter a valid email address");
           document.getElementById("forgot-email").classList.add("error-input");
@@ -666,8 +729,9 @@
         btn.disabled = true;
         btn.textContent = "Sending...";
 
+        // Send reset email via Supabase with redirect to live app
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: "https://stirring-panda-0a1f40.netlify.app",
+          redirectTo: "https://stirring-panda-0a1f40.netlify.app/index.html",
         });
 
         btn.disabled = false;
@@ -678,6 +742,7 @@
           return;
         }
 
+        // Show success message to user
         document.getElementById("forgot-success").textContent =
           "Reset link sent! Check your email 📧";
         document.getElementById("forgot-success").classList.add("show");
