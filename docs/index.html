@@ -737,7 +737,7 @@
         // Send reset email via Supabase with redirect to live app
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo:
-            "https://shannonseur18-commits.github.io/MzansiBuilds/reset-password.html",
+            "'https://shannonseur18-commits.github.io/MzansiBuilds/reset-password.html'",
         });
 
         btn.disabled = false;
