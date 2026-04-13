@@ -736,7 +736,8 @@
 
         // Send reset email via Supabase with redirect to live app
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo: "https://stirring-panda-0a1f40.netlify.app/index.html",
+          redirectTo:
+            "redirectTo: 'https://stirring-panda-0a1f40.netlify.app/reset-password.html'",
         });
 
         btn.disabled = false;
