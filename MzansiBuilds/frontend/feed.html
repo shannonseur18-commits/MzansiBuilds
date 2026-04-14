@@ -73,6 +73,31 @@
         margin: 0 auto;
         padding: 20px 16px;
       }
+      .welcome-banner {
+        background: var(--green-dark);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 20px;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .welcome-banner .icon {
+        font-size: 32px;
+        flex-shrink: 0;
+      }
+      .welcome-banner h3 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .welcome-banner p {
+        font-size: 13px;
+        color: #9ca3af;
+        line-height: 1.5;
+      }
       .post-box {
         background: var(--white);
         border-radius: 14px;
@@ -182,6 +207,7 @@
         gap: 10px;
         border-top: 1px solid var(--gray-border);
         padding-top: 12px;
+        flex-wrap: wrap;
       }
       .action-btn {
         display: flex;
@@ -205,6 +231,89 @@
         background: var(--green-pale);
         color: var(--green-main);
       }
+      .action-btn:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      /* Collab requests section (visible to post owner only) */
+      .collab-requests {
+        margin-top: 12px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 10px;
+        padding: 12px;
+        display: none;
+      }
+      .collab-requests.has-requests {
+        display: block;
+      }
+      .collab-requests h4 {
+        font-size: 13px;
+        font-weight: 500;
+        color: #166534;
+        margin-bottom: 8px;
+      }
+      .collab-request-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid #d1fae5;
+        font-size: 13px;
+        color: #374151;
+      }
+      .collab-request-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .collab-request-row .req-name {
+        font-weight: 500;
+      }
+      .collab-request-row .req-actions {
+        display: flex;
+        gap: 6px;
+      }
+      .btn-accept {
+        background: #16a34a;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+      }
+      .btn-decline {
+        background: #f3f4f6;
+        color: #6b7280;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+      }
+      .btn-accept:hover {
+        background: #15803d;
+      }
+      .btn-decline:hover {
+        background: #e5e7eb;
+      }
+      .req-status {
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: 500;
+      }
+      .req-status.accepted {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .req-status.declined {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      /* Comments */
       .comments {
         margin-top: 12px;
         display: none;
@@ -289,15 +398,27 @@
         <a href="index.html" onclick="logout()">Sign Out</a>
       </div>
     </nav>
+
     <div class="main">
+      <div class="welcome-banner">
+        <div class="icon">🚀</div>
+        <div>
+          <h3>Welcome to the Live Feed</h3>
+          <p>
+            See what other SA developers are building. Share your progress,
+            comment on projects and raise your hand to collaborate!
+          </p>
+        </div>
+      </div>
+
       <div class="post-box">
         <textarea
           id="post-text"
-          placeholder="What are you building today?"
+          placeholder="What are you building today? Share your progress with the community..."
         ></textarea>
         <div class="post-box-footer">
           <select id="post-stage">
-            <option value="">Select stage...</option>
+            <option value="">Project stage...</option>
             <option>Planning</option>
             <option>In Progress</option>
             <option>Testing</option>
@@ -314,11 +435,13 @@
           <button class="btn-post" onclick="addPost()">Post</button>
         </div>
       </div>
+
       <div id="feed"><div class="loading">Loading posts...</div></div>
     </div>
 
     <script type="module">
       import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
       const supabase = createClient(
         "https://soqkgdjjupqxjvmpsuxd.supabase.co",
         "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
@@ -340,21 +463,28 @@
           .slice(0, 2);
       }
 
+      //  Timestamp bug
+      // Supabase stores timestamps as UTC but without the "Z" suffix.
+      // Without "Z", JS treats it as LOCAL time — making posts seem 2h old in UTC+2.
+      // Adding "Z" forces correct UTC parsing so timeAgo is accurate.
       function timeAgo(date) {
-        const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+        const utcDate = new Date(date.endsWith("Z") ? date : date + "Z");
+        const seconds = Math.floor((new Date() - utcDate) / 1000);
         if (seconds < 60) return "just now";
         if (seconds < 3600) return Math.floor(seconds / 60) + "m ago";
         if (seconds < 86400) return Math.floor(seconds / 3600) + "h ago";
         return Math.floor(seconds / 86400) + "d ago";
       }
 
+      // Load posts, their comments AND collab requests
       async function loadPosts() {
         const { data: posts } = await supabase
           .from("posts")
-          .select("*, comments(*)")
+          .select("*, comments(*), collab_requests(*)")
           .order("created_at", { ascending: false });
 
         const feed = document.getElementById("feed");
+
         if (!posts || posts.length === 0) {
           feed.innerHTML =
             '<div class="loading">No posts yet. Be the first to post!</div>';
@@ -362,41 +492,120 @@
         }
 
         feed.innerHTML = posts
-          .map(
-            (post) => `
-        <div class="card">
-          <div class="card-header">
-            <div class="avatar">${getInitials(post.author_name || "U")}</div>
-            <div class="card-meta">
-              <strong>${post.author_name || "Anonymous"}</strong>
-              <span>${timeAgo(post.created_at)} · Stage: <b>${post.stage || "Not set"}</b></span>
-            </div>
-            ${post.support_needed ? `<span class="badge">${post.support_needed}</span>` : ""}
-          </div>
-          <div class="card-body">${post.content}</div>
-          <div class="card-actions">
-            <button class="action-btn" onclick="toggleComments('comments-${post.id}')">💬 Comments (${post.comments?.length || 0})</button>
-            <button class="action-btn collab" onclick="raiseHand(this)">✋ Raise hand</button>
-          </div>
-          <div class="comments" id="comments-${post.id}">
-            ${(post.comments || [])
-              .map(
-                (c) => `
-              <div class="comment">
-                <div class="comment-avatar">${getInitials(c.author_name || "U")}</div>
-                <div class="comment-bubble"><strong>${c.author_name || "Anonymous"}</strong>${c.content}</div>
+          .map((post) => {
+            const isOwner = post.author_name === userName;
+
+            // FIX 2 & 3: Raise hand — check if current user already raised their hand on this post
+            const myRequest = (post.collab_requests || []).find(
+              (r) => r.requester_name === userName,
+            );
+            const pendingRequests = (post.collab_requests || []).filter(
+              (r) => r.status === "pending",
+            );
+
+            // Button label based on current user's request status
+            let raiseHandBtn = "";
+            if (isOwner) {
+              // Post owner can't raise hand on their own post
+              raiseHandBtn = `<button class="action-btn" disabled>✏️ Your post</button>`;
+            } else if (myRequest) {
+              const statusLabel =
+                {
+                  pending: "⏳ Request sent",
+                  accepted: "✅ Accepted!",
+                  declined: "❌ Declined",
+                }[myRequest.status] || "✋ Raise hand";
+              raiseHandBtn = `<button class="action-btn collab" disabled>${statusLabel}</button>`;
+            } else {
+              raiseHandBtn = `<button class="action-btn collab" onclick="raiseHand(this, '${post.id}', '${post.author_name}')">✋ Raise hand</button>`;
+            }
+
+            // Collab requests panel — only visible to post owner
+            let collabPanel = "";
+            if (isOwner && pendingRequests.length > 0) {
+              const rows = pendingRequests
+                .map(
+                  (r) => `
+              <div class="collab-request-row">
+                <span class="req-name">✋ ${r.requester_name}</span>
+                <div class="req-actions">
+                  <button class="btn-accept" onclick="respondToRequest('${r.id}', 'accepted')">Accept</button>
+                  <button class="btn-decline" onclick="respondToRequest('${r.id}', 'declined')">Decline</button>
+                </div>
               </div>
             `,
-              )
-              .join("")}
-            <div class="comment-input-row">
-              <input type="text" placeholder="Add a comment..." id="ci-${post.id}"/>
-              <button onclick="addComment('${post.id}', 'ci-${post.id}')">Send</button>
+                )
+                .join("");
+              collabPanel = `
+              <div class="collab-requests has-requests">
+                <h4>🤝 Collaboration requests (${pendingRequests.length})</h4>
+                ${rows}
+              </div>
+            `;
+            }
+
+            // Also show accepted collabs to post owner
+            const acceptedRequests = (post.collab_requests || []).filter(
+              (r) => r.status === "accepted",
+            );
+            if (isOwner && acceptedRequests.length > 0) {
+              const acceptedRows = acceptedRequests
+                .map(
+                  (r) => `
+              <div class="collab-request-row">
+                <span class="req-name">👥 ${r.requester_name}</span>
+                <span class="req-status accepted">Collaborating</span>
+              </div>
+            `,
+                )
+                .join("");
+              collabPanel += `
+              <div class="collab-requests has-requests" style="margin-top:8px">
+                <h4>✅ Active collaborators</h4>
+                ${acceptedRows}
+              </div>
+            `;
+            }
+
+            return `
+            <div class="card">
+              <div class="card-header">
+                <div class="avatar">${getInitials(post.author_name || "U")}</div>
+                <div class="card-meta">
+                  <strong>${post.author_name || "Anonymous"}</strong>
+                  <span>${timeAgo(post.created_at)} · Stage: <b>${post.stage || "Not set"}</b></span>
+                </div>
+                ${post.support_needed ? `<span class="badge">${post.support_needed}</span>` : ""}
+              </div>
+              <div class="card-body">${post.content}</div>
+              <div class="card-actions">
+                <button class="action-btn" onclick="toggleComments('comments-${post.id}')">
+                  💬 Comments (${post.comments?.length || 0})
+                </button>
+                ${raiseHandBtn}
+              </div>
+              ${collabPanel}
+              <div class="comments" id="comments-${post.id}">
+                ${(post.comments || [])
+                  .map(
+                    (c) => `
+                  <div class="comment">
+                    <div class="comment-avatar">${getInitials(c.author_name || "U")}</div>
+                    <div class="comment-bubble">
+                      <strong>${c.author_name || "Anonymous"}</strong>${c.content}
+                    </div>
+                  </div>
+                `,
+                  )
+                  .join("")}
+                <div class="comment-input-row">
+                  <input type="text" placeholder="Write a comment..." id="ci-${post.id}"/>
+                  <button onclick="addComment('${post.id}', 'ci-${post.id}')">Send</button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      `,
-          )
+          `;
+          })
           .join("");
       }
 
@@ -404,9 +613,37 @@
         document.getElementById(id).classList.toggle("open");
       };
 
-      window.raiseHand = function (btn) {
-        btn.textContent = "✅ Hand raised!";
+      //  Raise hand — writes to Supabase collab_requests table
+      window.raiseHand = async function (btn, postId, postOwner) {
+        if (userName === postOwner) return; // safety check
         btn.disabled = true;
+        btn.textContent = "⏳ Sending...";
+
+        const { error } = await supabase.from("collab_requests").insert({
+          post_id: postId,
+          requester_name: userName,
+          status: "pending",
+        });
+
+        if (error) {
+          btn.disabled = false;
+          btn.textContent = "✋ Raise hand";
+          alert("Could not send request. Please try again.");
+          return;
+        }
+
+        btn.textContent = "⏳ Request sent";
+        // Reload so the post owner's panel also refreshes
+        loadPosts();
+      };
+
+      //  Post owner can accept or decline a collab request
+      window.respondToRequest = async function (requestId, status) {
+        await supabase
+          .from("collab_requests")
+          .update({ status })
+          .eq("id", requestId);
+        loadPosts();
       };
 
       window.addComment = async function (postId, inputId) {
@@ -426,7 +663,7 @@
         const text = document.getElementById("post-text").value.trim();
         const stage = document.getElementById("post-stage").value;
         const support = document.getElementById("post-support").value;
-        if (!text) return alert("Please write something first!");
+        if (!text) return alert("Please write something before posting!");
         await supabase.from("posts").insert({
           content: text,
           stage,
@@ -441,3 +678,4 @@
     </script>
   </body>
 </html>
+
