@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MzansiBuilds – Build in Public</title>
+    <title>MzansiBuilds – Feed</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500&display=swap"
       rel="stylesheet"
@@ -26,733 +26,655 @@
         --gray: #f5f5f3;
         --gray-border: #e0e0dc;
         --text-muted: #6b7280;
-        --red: #ef4444;
       }
       body {
         font-family: "Inter", sans-serif;
-        background: var(--black);
+        background: var(--gray);
         min-height: 100vh;
+      }
+      nav {
+        background: var(--green-dark);
+        padding: 14px 20px;
         display: flex;
         align-items: center;
-        justify-content: center;
-        padding: 24px;
-        background-image:
-          radial-gradient(ellipse at 20% 50%, #0f3d1f44 0%, transparent 60%),
-          radial-gradient(ellipse at 80% 20%, #1a5c2a33 0%, transparent 50%);
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 100;
       }
-      .container {
-        width: 100%;
-        max-width: 440px;
-      }
-      .logo {
-        text-align: center;
-        margin-bottom: 36px;
-      }
-      .logo h1 {
+      nav h1 {
         font-family: "Space Grotesk", sans-serif;
-        font-size: 32px;
+        font-size: 20px;
         font-weight: 700;
         color: var(--white);
-        letter-spacing: -1px;
       }
-      .logo h1 span {
-        color: var(--green-light);
+      nav h1 span {
+        color: #2d8c47;
       }
-      .logo p {
+      .nav-links {
+        display: flex;
+        gap: 6px;
+      }
+      .nav-links a {
+        color: #9ca3af;
+        text-decoration: none;
+        font-size: 13px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        transition: all 0.2s;
+      }
+      .nav-links a.active,
+      .nav-links a:hover {
+        background: var(--green-main);
+        color: var(--white);
+      }
+      .main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 20px 16px;
+      }
+      .welcome-banner {
+        background: var(--green-dark);
+        border-radius: 14px;
+        padding: 20px;
+        margin-bottom: 20px;
+        color: var(--white);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .welcome-banner .icon {
+        font-size: 32px;
+        flex-shrink: 0;
+      }
+      .welcome-banner h3 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .welcome-banner p {
         font-size: 13px;
         color: #9ca3af;
-        margin-top: 6px;
+        line-height: 1.5;
+      }
+      .post-box {
+        background: var(--white);
+        border-radius: 14px;
+        padding: 16px;
+        border: 1px solid var(--gray-border);
+        margin-bottom: 20px;
+      }
+      .post-box textarea {
+        width: 100%;
+        border: 1.5px solid var(--gray-border);
+        border-radius: 10px;
+        padding: 12px;
+        font-size: 14px;
+        font-family: "Inter", sans-serif;
+        resize: none;
+        outline: none;
+        height: 80px;
+      }
+      .post-box textarea:focus {
+        border-color: var(--green-main);
+      }
+      .post-box-footer {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        align-items: center;
+      }
+      .post-box-footer select {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1.5px solid var(--gray-border);
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: "Inter", sans-serif;
+        outline: none;
+        color: var(--black);
+      }
+      .btn-post {
+        background: var(--green-main);
+        color: var(--white);
+        border: none;
+        border-radius: 8px;
+        padding: 9px 20px;
+        font-size: 14px;
+        font-weight: 500;
+        font-family: "Inter", sans-serif;
+        cursor: pointer;
+      }
+      .btn-post:hover {
+        background: var(--green-dark);
       }
       .card {
         background: var(--white);
-        border-radius: 16px;
-        padding: 36px;
+        border-radius: 14px;
+        padding: 18px;
         border: 1px solid var(--gray-border);
+        margin-bottom: 14px;
       }
-      .tabs {
+      .card-header {
         display: flex;
-        background: var(--gray);
-        border-radius: 10px;
-        padding: 4px;
-        margin-bottom: 28px;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
       }
-      .tab {
-        flex: 1;
-        padding: 10px;
-        text-align: center;
-        font-size: 14px;
-        font-weight: 500;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s;
-        color: var(--text-muted);
-        border: none;
-        background: transparent;
-      }
-      .tab.active {
+      .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         background: var(--green-main);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         color: var(--white);
-      }
-      .form-group {
-        margin-bottom: 18px;
-      }
-      label {
-        display: block;
         font-size: 13px;
         font-weight: 500;
-        color: var(--black);
-        margin-bottom: 6px;
+        flex-shrink: 0;
       }
-      input {
-        width: 100%;
-        padding: 11px 14px;
-        border: 1.5px solid var(--gray-border);
-        border-radius: 10px;
+      .card-meta {
+        flex: 1;
+      }
+      .card-meta strong {
         font-size: 14px;
-        font-family: "Inter", sans-serif;
+        font-weight: 500;
         color: var(--black);
-        background: var(--white);
-        transition: border-color 0.2s;
-        outline: none;
+        display: block;
       }
-      input:focus {
-        border-color: var(--green-main);
+      .card-meta span {
+        font-size: 12px;
+        color: var(--text-muted);
       }
-      input.error-input {
-        border-color: var(--red);
+      .badge {
+        font-size: 11px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 500;
+        background: #fef3c7;
+        color: #92400e;
       }
-      .password-wrapper {
-        position: relative;
+      .card-body {
+        font-size: 14px;
+        color: #374151;
+        line-height: 1.6;
+        margin-bottom: 14px;
       }
-      .password-wrapper input {
-        padding-right: 44px;
+      .card-actions {
+        display: flex;
+        gap: 10px;
+        border-top: 1px solid var(--gray-border);
+        padding-top: 12px;
+        flex-wrap: wrap;
       }
-      .eye-btn {
-        position: absolute;
-        right: 12px;
-        top: 50%;
-        transform: translateY(-50%);
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--text-muted);
         background: none;
         border: none;
         cursor: pointer;
-        color: var(--text-muted);
-        padding: 4px;
-        display: flex;
-        align-items: center;
+        padding: 6px 10px;
+        border-radius: 8px;
+        transition: all 0.2s;
+        font-family: "Inter", sans-serif;
       }
-      .eye-btn:hover {
+      .action-btn:hover {
+        background: var(--gray);
         color: var(--black);
       }
-      .field-error {
-        font-size: 12px;
-        color: var(--red);
-        margin-top: 5px;
-        display: none;
+      .action-btn.collab:hover {
+        background: var(--green-pale);
+        color: var(--green-main);
       }
-      .field-error.show {
-        display: block;
+      .action-btn:disabled {
+        opacity: 0.6;
+        cursor: default;
       }
-      .btn {
-        width: 100%;
-        padding: 13px;
-        background: var(--green-main);
-        color: var(--white);
-        border: none;
+      /* Collab requests section (visible to post owner only) */
+      .collab-requests {
+        margin-top: 12px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
         border-radius: 10px;
-        font-size: 15px;
+        padding: 12px;
+        display: none;
+      }
+      .collab-requests.has-requests {
+        display: block;
+      }
+      .collab-requests h4 {
+        font-size: 13px;
         font-weight: 500;
+        color: #166534;
+        margin-bottom: 8px;
+      }
+      .collab-request-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid #d1fae5;
+        font-size: 13px;
+        color: #374151;
+      }
+      .collab-request-row:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+      }
+      .collab-request-row .req-name {
+        font-weight: 500;
+      }
+      .collab-request-row .req-actions {
+        display: flex;
+        gap: 6px;
+      }
+      .btn-accept {
+        background: #16a34a;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+        cursor: pointer;
         font-family: "Inter", sans-serif;
+      }
+      .btn-decline {
+        background: #f3f4f6;
+        color: #6b7280;
+        border: none;
+        border-radius: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
         cursor: pointer;
+        font-family: "Inter", sans-serif;
+      }
+      .btn-accept:hover {
+        background: #15803d;
+      }
+      .btn-decline:hover {
+        background: #e5e7eb;
+      }
+      .req-status {
+        font-size: 12px;
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-weight: 500;
+      }
+      .req-status.accepted {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .req-status.declined {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+      /* Comments */
+      .comments {
+        margin-top: 12px;
+        display: none;
+      }
+      .comments.open {
+        display: block;
+      }
+      .comment {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .comment-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: var(--black);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-size: 10px;
+        font-weight: 500;
+        flex-shrink: 0;
+      }
+      .comment-bubble {
+        background: var(--gray);
+        border-radius: 10px;
+        padding: 8px 12px;
+        font-size: 13px;
+        color: #374151;
+        flex: 1;
+      }
+      .comment-bubble strong {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--black);
+        margin-bottom: 2px;
+      }
+      .comment-input-row {
+        display: flex;
+        gap: 8px;
         margin-top: 8px;
-        transition: background 0.2s;
       }
-      .btn:hover {
-        background: var(--green-dark);
-      }
-      .btn:disabled {
-        background: #9ca3af;
-        cursor: not-allowed;
-      }
-      .error-msg {
-        color: var(--red);
+      .comment-input-row input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1.5px solid var(--gray-border);
+        border-radius: 8px;
         font-size: 13px;
-        margin-top: 10px;
-        text-align: center;
-        display: none;
+        font-family: "Inter", sans-serif;
+        outline: none;
       }
-      .error-msg.show {
-        display: block;
+      .comment-input-row input:focus {
+        border-color: var(--green-main);
       }
-      .success-msg {
-        color: var(--green-main);
+      .comment-input-row button {
+        background: var(--green-main);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 14px;
         font-size: 13px;
-        margin-top: 10px;
-        text-align: center;
-        display: none;
-      }
-      .success-msg.show {
-        display: block;
-      }
-      .forgot-link {
-        text-align: right;
-        margin-top: -10px;
-        margin-bottom: 14px;
-      }
-      .forgot-link a {
-        font-size: 12px;
-        color: var(--green-main);
         cursor: pointer;
-        text-decoration: none;
+        font-family: "Inter", sans-serif;
       }
-      .forgot-link a:hover {
-        text-decoration: underline;
-      }
-      .divider {
+      .loading {
         text-align: center;
-        font-size: 12px;
+        padding: 20px;
         color: var(--text-muted);
-        margin: 16px 0;
-        position: relative;
-      }
-      .divider::before,
-      .divider::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        width: 42%;
-        height: 1px;
-        background: var(--gray-border);
-      }
-      .divider::before {
-        left: 0;
-      }
-      .divider::after {
-        right: 0;
-      }
-      .hidden {
-        display: none;
-      }
-      .tagline {
-        text-align: center;
-        font-size: 12px;
-        color: #9ca3af;
-        margin-top: 20px;
-      }
-      .tagline span {
-        color: var(--green-light);
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <div class="logo">
-        <h1>Mzansi<span>Builds</span></h1>
-        <p>Build in public. Grow together. 🇿🇦</p>
+    <nav>
+      <h1>Mzansi<span>Builds</span></h1>
+      <div class="nav-links">
+        <a href="feed.html" class="active">Feed</a>
+        <a href="projects.html">My Projects</a>
+        <a href="wall.html">Wall 🎉</a>
+        <a href="index.html" onclick="logout()">Sign Out</a>
       </div>
+    </nav>
 
-      <div class="card">
-        <div class="tabs">
-          <button class="tab active" onclick="showTab('login')">Sign In</button>
-          <button class="tab" onclick="showTab('register')">Register</button>
-        </div>
-
-        <!-- LOGIN FORM -->
-        <div id="login-form">
-          <div class="form-group">
-            <label>Email address</label>
-            <input
-              type="email"
-              id="login-email"
-              placeholder="you@example.com"
-            />
-            <p class="field-error" id="login-email-err">
-              Please enter your email address
-            </p>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <div class="password-wrapper">
-              <input
-                type="password"
-                id="login-password"
-                placeholder="••••••••"
-              />
-              <button
-                class="eye-btn"
-                onclick="toggleEye('login-password', 'eye1')"
-                type="button"
-              >
-                <svg
-                  id="eye1"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              </button>
-            </div>
-            <p class="field-error" id="login-pass-err">
-              Please enter your password
-            </p>
-          </div>
-          <div class="forgot-link">
-            <a onclick="showForgot()">Forgot password?</a>
-          </div>
-          <button class="btn" onclick="login()">Sign In</button>
-          <p class="error-msg" id="login-error"></p>
-          <p class="success-msg" id="login-success"></p>
-          <div class="divider">or</div>
-          <p
-            style="
-              text-align: center;
-              font-size: 13px;
-              color: var(--text-muted);
-            "
-          >
-            No account?
-            <span
-              style="
-                color: var(--green-main);
-                cursor: pointer;
-                font-weight: 500;
-              "
-              onclick="showTab('register')"
-              >Register here</span
-            >
-          </p>
-        </div>
-
-        <!-- REGISTER FORM -->
-        <div id="register-form" class="hidden">
-          <div class="form-group">
-            <label>Full name</label>
-            <input type="text" id="reg-name" placeholder="Shannon Seur" />
-            <p class="field-error" id="reg-name-err">
-              Please enter your full name
-            </p>
-          </div>
-          <div class="form-group">
-            <label>Email address</label>
-            <input type="email" id="reg-email" placeholder="you@example.com" />
-            <p class="field-error" id="reg-email-err">
-              Please enter a valid email address
-            </p>
-          </div>
-          <div class="form-group">
-            <label>Password</label>
-            <div class="password-wrapper">
-              <input
-                type="password"
-                id="reg-password"
-                placeholder="Create a password (min 6 characters)"
-              />
-              <button
-                class="eye-btn"
-                onclick="toggleEye('reg-password', 'eye2')"
-                type="button"
-              >
-                <svg
-                  id="eye2"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              </button>
-            </div>
-            <p class="field-error" id="reg-pass-err">
-              Password must be at least 6 characters
-            </p>
-          </div>
-          <button class="btn" onclick="register()">Create Account</button>
-          <p class="error-msg" id="reg-error"></p>
-          <p class="success-msg" id="reg-success"></p>
-          <div class="divider">or</div>
-          <p
-            style="
-              text-align: center;
-              font-size: 13px;
-              color: var(--text-muted);
-            "
-          >
-            Already have an account?
-            <span
-              style="
-                color: var(--green-main);
-                cursor: pointer;
-                font-weight: 500;
-              "
-              onclick="showTab('login')"
-              >Sign in</span
-            >
-          </p>
-        </div>
-
-        <!-- FORGOT PASSWORD FORM -->
-        <div id="forgot-form" class="hidden">
-          <p
-            style="
-              font-size: 14px;
-              color: var(--text-muted);
-              margin-bottom: 20px;
-            "
-          >
-            Enter your email and we'll send you a reset link.
-          </p>
-          <div class="form-group">
-            <label>Email address</label>
-            <input
-              type="email"
-              id="forgot-email"
-              placeholder="you@example.com"
-            />
-            <p class="field-error" id="forgot-email-err">
-              Please enter your email address
-            </p>
-          </div>
-          <button class="btn" onclick="forgotPassword()">
-            Send Reset Link
-          </button>
-          <p class="error-msg" id="forgot-error"></p>
-          <p class="success-msg" id="forgot-success"></p>
-          <div class="divider">or</div>
-          <p
-            style="
-              text-align: center;
-              font-size: 13px;
-              color: var(--text-muted);
-            "
-          >
-            Remember it?
-            <span
-              style="
-                color: var(--green-main);
-                cursor: pointer;
-                font-weight: 500;
-              "
-              onclick="showTab('login')"
-              >Sign in</span
-            >
+    <div class="main">
+      <div class="welcome-banner">
+        <div class="icon">🚀</div>
+        <div>
+          <h3>Welcome to the Live Feed</h3>
+          <p>
+            See what other SA developers are building. Share your progress,
+            comment on projects and raise your hand to collaborate!
           </p>
         </div>
       </div>
 
-      <p class="tagline">
-        Powered by <span>South African developers</span> building the future
-      </p>
+      <div class="post-box">
+        <textarea
+          id="post-text"
+          placeholder="What are you building today? Share your progress with the community..."
+        ></textarea>
+        <div class="post-box-footer">
+          <select id="post-stage">
+            <option value="">Project stage...</option>
+            <option>Planning</option>
+            <option>In Progress</option>
+            <option>Testing</option>
+            <option>Completed</option>
+          </select>
+          <select id="post-support">
+            <option value="">Support needed?</option>
+            <option>No support needed</option>
+            <option>Need a designer</option>
+            <option>Need a backend dev</option>
+            <option>Need a frontend dev</option>
+            <option>Need feedback</option>
+          </select>
+          <button class="btn-post" onclick="addPost()">Post</button>
+        </div>
+      </div>
+
+      <div id="feed"><div class="loading">Loading posts...</div></div>
     </div>
 
     <script type="module">
-      // Import Supabase client for authentication
       import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-      // Initialise Supabase with project URL and public key
       const supabase = createClient(
         "https://soqkgdjjupqxjvmpsuxd.supabase.co",
         "sb_publishable_EP-CaxQNoNQwsdQuKbMh7w_vInlh_eF",
       );
 
-      // Clear login email error as user types
-      document
-        .getElementById("login-email")
-        .addEventListener("input", function () {
-          this.classList.remove("error-input");
-          document.getElementById("login-email-err").classList.remove("show");
-          document.getElementById("login-error").classList.remove("show");
-        });
+      const userName = localStorage.getItem("user_name") || "Anonymous";
 
-      // Clear login password error as user types
-      document
-        .getElementById("login-password")
-        .addEventListener("input", function () {
-          this.classList.remove("error-input");
-          document.getElementById("login-pass-err").classList.remove("show");
-          document.getElementById("login-error").classList.remove("show");
-        });
-
-      // Clear register name error as user types
-      document
-        .getElementById("reg-name")
-        .addEventListener("input", function () {
-          this.classList.remove("error-input");
-          document.getElementById("reg-name-err").classList.remove("show");
-        });
-
-      // Clear register email error as user types
-      document
-        .getElementById("reg-email")
-        .addEventListener("input", function () {
-          this.classList.remove("error-input");
-          document.getElementById("reg-email-err").classList.remove("show");
-        });
-
-      // Clear register password error as user types
-      document
-        .getElementById("reg-password")
-        .addEventListener("input", function () {
-          this.classList.remove("error-input");
-          document.getElementById("reg-pass-err").classList.remove("show");
-        });
-
-      // Switch between login, register and forgot password tabs
-      window.showTab = function (tab) {
-        document
-          .getElementById("login-form")
-          .classList.toggle("hidden", tab !== "login");
-        document
-          .getElementById("register-form")
-          .classList.toggle("hidden", tab !== "register");
-        document
-          .getElementById("forgot-form")
-          .classList.toggle("hidden", tab !== "forgot");
-        document.querySelectorAll(".tab").forEach((t, i) => {
-          t.classList.toggle(
-            "active",
-            (tab === "login" && i === 0) || (tab === "register" && i === 1),
-          );
-        });
+      window.logout = function () {
+        localStorage.clear();
+        supabase.auth.signOut();
       };
 
-      // Show the forgot password form
-      window.showForgot = function () {
-        document.getElementById("login-form").classList.add("hidden");
-        document.getElementById("register-form").classList.add("hidden");
-        document.getElementById("forgot-form").classList.remove("hidden");
-        document
-          .querySelectorAll(".tab")
-          .forEach((t) => t.classList.remove("active"));
+      function getInitials(name) {
+        return name
+          .split(" ")
+          .map((w) => w[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2);
+      }
+
+      //  Timestamp bug
+      // Supabase stores timestamps as UTC but without the "Z" suffix.
+      // Without "Z", JS treats it as LOCAL time — making posts seem 2h old in UTC+2.
+      // Adding "Z" forces correct UTC parsing so timeAgo is accurate.
+      function timeAgo(date) {
+        const utcDate = new Date(date.endsWith("Z") ? date : date + "Z");
+        const seconds = Math.floor((new Date() - utcDate) / 1000);
+        if (seconds < 60) return "just now";
+        if (seconds < 3600) return Math.floor(seconds / 60) + "m ago";
+        if (seconds < 86400) return Math.floor(seconds / 3600) + "h ago";
+        return Math.floor(seconds / 86400) + "d ago";
+      }
+
+      // Load posts, their comments AND collab requests
+      async function loadPosts() {
+        const { data: posts } = await supabase
+          .from("posts")
+          .select("*, comments(*), collab_requests(*)")
+          .order("created_at", { ascending: false });
+
+        const feed = document.getElementById("feed");
+
+        if (!posts || posts.length === 0) {
+          feed.innerHTML =
+            '<div class="loading">No posts yet. Be the first to post!</div>';
+          return;
+        }
+
+        feed.innerHTML = posts
+          .map((post) => {
+            const isOwner = post.author_name === userName;
+
+            // FIX 2 & 3: Raise hand — check if current user already raised their hand on this post
+            const myRequest = (post.collab_requests || []).find(
+              (r) => r.requester_name === userName,
+            );
+            const pendingRequests = (post.collab_requests || []).filter(
+              (r) => r.status === "pending",
+            );
+
+            // Button label based on current user's request status
+            let raiseHandBtn = "";
+            if (isOwner) {
+              // Post owner can't raise hand on their own post
+              raiseHandBtn = `<button class="action-btn" disabled>✏️ Your post</button>`;
+            } else if (myRequest) {
+              const statusLabel =
+                {
+                  pending: "⏳ Request sent",
+                  accepted: "✅ Accepted!",
+                  declined: "❌ Declined",
+                }[myRequest.status] || "✋ Raise hand";
+              raiseHandBtn = `<button class="action-btn collab" disabled>${statusLabel}</button>`;
+            } else {
+              raiseHandBtn = `<button class="action-btn collab" onclick="raiseHand(this, '${post.id}', '${post.author_name}')">✋ Raise hand</button>`;
+            }
+
+            // Collab requests panel — only visible to post owner
+            let collabPanel = "";
+            if (isOwner && pendingRequests.length > 0) {
+              const rows = pendingRequests
+                .map(
+                  (r) => `
+              <div class="collab-request-row">
+                <span class="req-name">✋ ${r.requester_name}</span>
+                <div class="req-actions">
+                  <button class="btn-accept" onclick="respondToRequest('${r.id}', 'accepted')">Accept</button>
+                  <button class="btn-decline" onclick="respondToRequest('${r.id}', 'declined')">Decline</button>
+                </div>
+              </div>
+            `,
+                )
+                .join("");
+              collabPanel = `
+              <div class="collab-requests has-requests">
+                <h4>🤝 Collaboration requests (${pendingRequests.length})</h4>
+                ${rows}
+              </div>
+            `;
+            }
+
+            // Also show accepted collabs to post owner
+            const acceptedRequests = (post.collab_requests || []).filter(
+              (r) => r.status === "accepted",
+            );
+            if (isOwner && acceptedRequests.length > 0) {
+              const acceptedRows = acceptedRequests
+                .map(
+                  (r) => `
+              <div class="collab-request-row">
+                <span class="req-name">👥 ${r.requester_name}</span>
+                <span class="req-status accepted">Collaborating</span>
+              </div>
+            `,
+                )
+                .join("");
+              collabPanel += `
+              <div class="collab-requests has-requests" style="margin-top:8px">
+                <h4>✅ Active collaborators</h4>
+                ${acceptedRows}
+              </div>
+            `;
+            }
+
+            return `
+            <div class="card">
+              <div class="card-header">
+                <div class="avatar">${getInitials(post.author_name || "U")}</div>
+                <div class="card-meta">
+                  <strong>${post.author_name || "Anonymous"}</strong>
+                  <span>${timeAgo(post.created_at)} · Stage: <b>${post.stage || "Not set"}</b></span>
+                </div>
+                ${post.support_needed ? `<span class="badge">${post.support_needed}</span>` : ""}
+              </div>
+              <div class="card-body">${post.content}</div>
+              <div class="card-actions">
+                <button class="action-btn" onclick="toggleComments('comments-${post.id}')">
+                  💬 Comments (${post.comments?.length || 0})
+                </button>
+                ${raiseHandBtn}
+              </div>
+              ${collabPanel}
+              <div class="comments" id="comments-${post.id}">
+                ${(post.comments || [])
+                  .map(
+                    (c) => `
+                  <div class="comment">
+                    <div class="comment-avatar">${getInitials(c.author_name || "U")}</div>
+                    <div class="comment-bubble">
+                      <strong>${c.author_name || "Anonymous"}</strong>${c.content}
+                    </div>
+                  </div>
+                `,
+                  )
+                  .join("")}
+                <div class="comment-input-row">
+                  <input type="text" placeholder="Write a comment..." id="ci-${post.id}"/>
+                  <button onclick="addComment('${post.id}', 'ci-${post.id}')">Send</button>
+                </div>
+              </div>
+            </div>
+          `;
+          })
+          .join("");
+      }
+
+      window.toggleComments = function (id) {
+        document.getElementById(id).classList.toggle("open");
       };
 
-      // Toggle password visibility on eye button click
-      window.toggleEye = function (inputId, iconId) {
+      //  Raise hand — writes to Supabase collab_requests table
+      window.raiseHand = async function (btn, postId, postOwner) {
+        if (userName === postOwner) return; // safety check
+        btn.disabled = true;
+        btn.textContent = "⏳ Sending...";
+
+        const { error } = await supabase.from("collab_requests").insert({
+          post_id: postId,
+          requester_name: userName,
+          status: "pending",
+        });
+
+        if (error) {
+          btn.disabled = false;
+          btn.textContent = "✋ Raise hand";
+          alert("Could not send request. Please try again.");
+          return;
+        }
+
+        btn.textContent = "⏳ Request sent";
+        // Reload so the post owner's panel also refreshes
+        loadPosts();
+      };
+
+      //  Post owner can accept or decline a collab request
+      window.respondToRequest = async function (requestId, status) {
+        await supabase
+          .from("collab_requests")
+          .update({ status })
+          .eq("id", requestId);
+        loadPosts();
+      };
+
+      window.addComment = async function (postId, inputId) {
         const input = document.getElementById(inputId);
-        const icon = document.getElementById(iconId);
-        if (input.type === "password") {
-          input.type = "text";
-          icon.innerHTML = `
-          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-          <line x1="1" y1="1" x2="23" y2="23"/>
-        `;
-        } else {
-          input.type = "password";
-          icon.innerHTML = `
-          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-          <circle cx="12" cy="12" r="3"/>
-        `;
-        }
-      };
-
-      // Show a field level error message
-      function showError(id, msg) {
-        const el = document.getElementById(id);
-        el.textContent = msg;
-        el.classList.add("show");
-      }
-
-      // Hide a field level error message
-      function hideError(id) {
-        document.getElementById(id).classList.remove("show");
-      }
-
-      // Login with email and password validation
-      window.login = async function () {
-        const email = document.getElementById("login-email").value.trim();
-        const password = document.getElementById("login-password").value;
-        let valid = true;
-
-        // Reset all error states before validating
-        hideError("login-email-err");
-        hideError("login-pass-err");
-        hideError("login-error");
-
-        // Validate email field
-        if (!email) {
-          showError("login-email-err", "Please enter your email address");
-          document.getElementById("login-email").classList.add("error-input");
-          valid = false;
-        } else if (!email.includes("@")) {
-          showError("login-email-err", "Please enter a valid email address");
-          document.getElementById("login-email").classList.add("error-input");
-          valid = false;
-        } else {
-          document
-            .getElementById("login-email")
-            .classList.remove("error-input");
-        }
-
-        // Validate password field
-        if (!password) {
-          showError("login-pass-err", "Please enter your password");
-          document
-            .getElementById("login-password")
-            .classList.add("error-input");
-          valid = false;
-        } else {
-          document
-            .getElementById("login-password")
-            .classList.remove("error-input");
-        }
-
-        if (!valid) return;
-
-        // Disable button while authenticating
-        const btn = document.querySelector("#login-form .btn");
-        btn.disabled = true;
-        btn.textContent = "Signing in...";
-
-        // Attempt login with Supabase auth
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+        const text = input.value.trim();
+        if (!text) return;
+        await supabase.from("comments").insert({
+          content: text,
+          post_id: postId,
+          author_name: userName,
         });
-
-        btn.disabled = false;
-        btn.textContent = "Sign In";
-
-        if (error) {
-          showError(
-            "login-error",
-            "Incorrect email or password. Please try again.",
-          );
-          return;
-        }
-
-        // Store user info and redirect to feed
-        const fullName = data.user.user_metadata?.full_name || email;
-        localStorage.setItem("user_name", fullName);
-        localStorage.setItem("user_email", email);
-        window.location.href = "feed.html";
+        input.value = "";
+        loadPosts();
       };
 
-      // Register a new account with validation
-      window.register = async function () {
-        const fullName = document.getElementById("reg-name").value.trim();
-        const email = document.getElementById("reg-email").value.trim();
-        const password = document.getElementById("reg-password").value;
-        let valid = true;
-
-        // Reset all error states before validating
-        hideError("reg-name-err");
-        hideError("reg-email-err");
-        hideError("reg-pass-err");
-        hideError("reg-error");
-
-        // Validate full name — only letters and spaces allowed
-        const nameRegex = /^[a-zA-Z\s]+$/;
-        if (!fullName) {
-          showError("reg-name-err", "Please enter your full name");
-          document.getElementById("reg-name").classList.add("error-input");
-          valid = false;
-        } else if (!nameRegex.test(fullName)) {
-          showError("reg-name-err", "Name can only contain letters and spaces");
-          document.getElementById("reg-name").classList.add("error-input");
-          valid = false;
-        } else {
-          document.getElementById("reg-name").classList.remove("error-input");
-        }
-
-        // Validate email
-        if (!email || !email.includes("@")) {
-          showError("reg-email-err", "Please enter a valid email address");
-          document.getElementById("reg-email").classList.add("error-input");
-          valid = false;
-        } else {
-          document.getElementById("reg-email").classList.remove("error-input");
-        }
-
-        // Validate password length
-        if (!password || password.length < 6) {
-          showError("reg-pass-err", "Password must be at least 6 characters");
-          document.getElementById("reg-password").classList.add("error-input");
-          valid = false;
-        } else {
-          document
-            .getElementById("reg-password")
-            .classList.remove("error-input");
-        }
-
-        if (!valid) return;
-
-        // Disable button while creating account
-        const btn = document.querySelector("#register-form .btn");
-        btn.disabled = true;
-        btn.textContent = "Creating account...";
-
-        // Create account with Supabase auth
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { data: { full_name: fullName } },
+      window.addPost = async function () {
+        const text = document.getElementById("post-text").value.trim();
+        const stage = document.getElementById("post-stage").value;
+        const support = document.getElementById("post-support").value;
+        if (!text) return alert("Please write something before posting!");
+        await supabase.from("posts").insert({
+          content: text,
+          stage,
+          support_needed: support,
+          author_name: userName,
         });
-
-        btn.disabled = false;
-        btn.textContent = "Create Account";
-
-        if (error) {
-          showError("reg-error", error.message);
-          return;
-        }
-
-        // Save user to users table and redirect to feed
-        await supabase.from("users").insert({ full_name: fullName, email });
-        document.getElementById("reg-success").textContent =
-          "Account created! Signing you in...";
-        document.getElementById("reg-success").classList.add("show");
-        localStorage.setItem("user_name", fullName);
-        localStorage.setItem("user_email", email);
-        setTimeout(() => (window.location.href = "feed.html"), 1500);
+        document.getElementById("post-text").value = "";
+        loadPosts();
       };
 
-      // Send password reset email to user
-      window.forgotPassword = async function () {
-        const email = document.getElementById("forgot-email").value.trim();
-
-        hideError("forgot-email-err");
-        hideError("forgot-error");
-
-        // Validate email before sending reset link
-        if (!email || !email.includes("@")) {
-          showError("forgot-email-err", "Please enter a valid email address");
-          document.getElementById("forgot-email").classList.add("error-input");
-          return;
-        }
-
-        document.getElementById("forgot-email").classList.remove("error-input");
-
-        const btn = document.querySelector("#forgot-form .btn");
-        btn.disabled = true;
-        btn.textContent = "Sending...";
-
-        // Send reset email via Supabase with redirect to live app
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo:
-            "'https://shannonseur18-commits.github.io/MzansiBuilds/reset-password.html'",
-        });
-
-        btn.disabled = false;
-        btn.textContent = "Send Reset Link";
-
-        if (error) {
-          showError("forgot-error", error.message);
-          return;
-        }
-
-        // Show success message to user
-        document.getElementById("forgot-success").textContent =
-          "Reset link sent! Check your email 📧";
-        document.getElementById("forgot-success").classList.add("show");
-      };
+      loadPosts();
     </script>
   </body>
 </html>
